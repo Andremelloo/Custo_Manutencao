@@ -401,28 +401,34 @@ for i in range(len(curva_s_semanas)):
         'real': r,
         'balance': bal,
         'balance_pct': bal_pct,
-        'is_wk22_point': (wk >= 22)
+        'is_wk24_point': (wk >= 24),
+        'is_wk22_point': (wk >= 24)
     })
 
-# 5. Análise de Inflexão na WK 22 por Família
-pre_w22_fam = defaultdict(float)
-post_w22_fam = defaultdict(float)
+# 5. Análise de Inflexão na WK 24 por Família
+max_wk_2026 = max((x['week'] for x in records_2026 if x['week'] > 0), default=45)
+print(f"Semanas ativas detectadas em 2026: 1 a {max_wk_2026}")
+pre_w24_fam = defaultdict(float)
+post_w24_fam = defaultdict(float)
+num_pre = 23
+num_post = max_wk_2026 - 23 if max_wk_2026 > 23 else 1
+
 for x in records_2026:
     if x['family'] == 'Personnel/Other': continue
-    if x['week'] <= 21:
-        pre_w22_fam[x['family']] += x['value']
-    elif x['week'] <= 44:
-        post_w22_fam[x['family']] += x['value']
+    if x['week'] <= 23:
+        pre_w24_fam[x['family']] += x['value']
+    elif x['week'] <= max_wk_2026:
+        post_w24_fam[x['family']] += x['value']
 
-familias_nomes = list(set(list(pre_w22_fam.keys()) + list(post_w22_fam.keys())))
-wk22_comparativo_familias = []
+familias_nomes = list(set(list(pre_w24_fam.keys()) + list(post_w24_fam.keys())))
+wk24_comparativo_familias = []
 for f in familias_nomes:
-    pre_tot = pre_w22_fam[f]
-    post_tot = post_w22_fam[f]
-    pre_media = pre_tot / 21
-    post_media = post_tot / 23
+    pre_tot = pre_w24_fam[f]
+    post_tot = post_w24_fam[f]
+    pre_media = pre_tot / num_pre
+    post_media = post_tot / num_post if num_post > 0 else 0.0
     crescimento = ((post_media / pre_media - 1) * 100) if pre_media > 0 else 100.0
-    wk22_comparativo_familias.append({
+    wk24_comparativo_familias.append({
         'family': f,
         'pre_total': pre_tot,
         'post_total': post_tot,
@@ -430,19 +436,19 @@ for f in familias_nomes:
         'post_media_sem': post_media,
         'aumento_pct': crescimento
     })
-wk22_comparativo_familias.sort(key=lambda t: t['post_total'], reverse=True)
+wk24_comparativo_familias.sort(key=lambda t: t['post_total'], reverse=True)
 
 # 6. Inteligência Semanal por Frota (W01 a W45)
 fleet_list = ['TT', 'STS', 'RS', 'EH', 'MHC', 'RTG']
 fleet_meta_info = {
     'TT': {
-        'nome': 'TT (Terminal Tractors)',
+        'nome': 'TT (Terminal Tractor)',
         'icone': '🚛',
         'budget': 6969769.23,
         'accum_cost': 10770689.99,
         'balance': -3800920.76,
         'balance_pct': -54.53,
-        'alert': 'A frota de TT apresentou o maior estouro orçamentário (-R$ 3,80M / -54,53%). O ritmo semanal mais que dobrou (+125,9%), saindo de R$ 147k/sem para R$ 332k/sem devido ao ciclo concentrado de 967 pneus Michelin (R$ 1,69M) e reformas de eixos tandem de carretas CH (R$ 1,24M).'
+        'alert': 'A frota de TT (Terminal Tractor) acelerou +71,8% no ritmo semanal pós-WK24 (de R$ 178,3k/sem para R$ 306,3k/sem), acumulando o maior estouro orçamentário (-R$ 3,80M / -54,53%), impulsionado pelo consumo concentrado de 967 pneus Michelin (R$ 1,69M) e reformas de eixos tandem de carretas CH (R$ 1,24M).'
     },
     'STS': {
         'nome': 'STS (Ship-to-Shore Cranes)',
@@ -451,25 +457,25 @@ fleet_meta_info = {
         'accum_cost': 3628550.85,
         'balance': -855704.70,
         'balance_pct': -30.86,
-        'alert': 'A frota de STS acelerou +103,4% após a WK 22 (de R$ 53k/sem para R$ 108k/sem). O estouro de -R$ 855k foi puxado pela troca emergencial e preventiva de cabos de elevação Bridon nos STS#08, #07 e #11 (R$ 725k) e freios SB28 (R$ 189k).'
+        'alert': 'A frota de STS acelerou +28,7% no ritmo semanal pós-WK24 (de R$ 71,4k/sem para R$ 91,8k/sem). O estouro de -R$ 855k foi puxado pela troca de cabos de elevação Bridon nos STS#08, #07 e #11 (R$ 725k) e freios SB28 (R$ 189k).'
     },
     'RS': {
-        'nome': 'RS (Reach Stackers)',
+        'nome': 'RS (REACH STACKERS)',
         'icone': '🚜',
         'budget': 2659461.54,
         'accum_cost': 3227444.01,
         'balance': -567982.47,
         'balance_pct': -21.36,
-        'alert': 'As empilhadeiras pesadas RS tiveram salto de +68,8% no ritmo semanal pós-WK22 (de R$ 51k/sem para R$ 86k/sem), totalizando -R$ 568k de desvio devido à troca e reparo de 12 bombas hidráulicas principais (R$ 193k) e 10 cubos de roda/rodas.'
+        'alert': 'A frota de RS (REACH STACKERS) teve salto de +21,0% no ritmo semanal pós-WK24 (de R$ 65,6k/sem para R$ 79,4k/sem), totalizando -R$ 568k de desvio devido à troca de bombas hidráulicas principais (R$ 193k) e reformas de cubos de roda.'
     },
     'EH': {
-        'nome': 'EH (Empty Handlers / Vazio)',
+        'nome': 'EH (EMPILHADEIRAS VAZIO)',
         'icone': '📦',
         'budget': 1012846.15,
         'accum_cost': 1235933.50,
         'balance': -223087.35,
         'balance_pct': -22.03,
-        'alert': 'A frota de vazios subiu +55,5% na média semanal (de R$ 21,5k/sem para R$ 33,5k/sem), acumulando desvio de -R$ 223k. Destacam-se o suporte de garfo da FL#01 (R$ 95k) e módulos de transmissão e controle do spreader.'
+        'alert': 'A frota de EH (EMPILHADEIRAS VAZIO) subiu +23,2% na média semanal pós-WK24 (de R$ 25,4k/sem para R$ 31,3k/sem), acumulando desvio de -R$ 223k. Destacam-se o suporte de garfo da FL#01 (R$ 95k) e módulos de transmissão e controle do spreader.'
     },
     'MHC': {
         'nome': 'MHC (Mobile Harbour Cranes)',
@@ -478,16 +484,16 @@ fleet_meta_info = {
         'accum_cost': 775660.19,
         'balance': -407583.27,
         'balance_pct': -110.73,
-        'alert': 'Os guindastes móveis apresentaram o maior estouro percentual (-110,73%), gastando mais do que o dobro do planejado devido a paradas corretivas severas: reforma da bomba principal do MHC#01 (R$ 231k) e bomba tripla do MHC#02 (R$ 73k).'
+        'alert': 'Os guindastes móveis apresentaram o maior estouro percentual (-110,73%), gastando mais do que o dobro do planejado devido a paradas corretivas severas na bomba principal do MHC#01 (R$ 231k) e bomba tripla do MHC#02 (R$ 73k).'
     },
     'RTG': {
-        'nome': 'RTG (Rubber Tyred Gantry)',
+        'nome': 'RTG (TRANSTAINERS)',
         'icone': '🏗️',
         'budget': 12998615.38,
         'accum_cost': 15360228.76,
         'balance': -2361613.38,
         'balance_pct': -18.17,
-        'alert': 'A frota de RTG acelerou +78,5% a partir da WK 22 (de R$ 242k/sem para R$ 431k/sem), resultando em -R$ 2,36M de desvio. Concentração pesada em 132 freios de gantry (R$ 980k), esteiras Brevetti RTG#15/#17 (R$ 214k) e bomba injetora RTG#38 (R$ 189k).'
+        'alert': 'A frota de RTG (TRANSTAINERS) acelerou +18,1% a partir da WK 24 (de R$ 317,3k/sem para R$ 374,8k/sem), resultando em -R$ 2,36M de desvio acumulado. Concentração em 132 freios de gantry (R$ 980k), esteiras Brevetti RTG#15/#17 (R$ 214k) e bomba injetora RTG#38 (R$ 189k).'
     }
 }
 
@@ -502,7 +508,8 @@ for f in fleet_list:
         semanas[w] = {
             'week': w,
             'total': 0.0,
-            'is_pos_wk22': (w >= 22),
+            'is_pos_wk24': (w >= 24),
+            'is_pos_wk22': (w >= 24), # retrocompatibilidade
             'top_item': '',
             'top_val': 0.0,
             'top_mach': '',
@@ -533,7 +540,7 @@ for f in fleet_list:
             semanas[w]['top_mach'] = mach_name
             
         maquinas[mach_name]['total'] += v
-        if w < 22:
+        if w < 24:
             maquinas[mach_name]['pre'] += v
             cat_pre[cat] += v
             if desc and v > 0:
@@ -557,23 +564,25 @@ for f in fleet_list:
         semanas_list.append({
             'week': w,
             'total': item_w['total'],
-            'is_pos_wk22': item_w['is_pos_wk22'],
+            'is_pos_wk24': item_w['is_pos_wk24'],
+            'is_pos_wk22': item_w['is_pos_wk24'],
             'top_item': item_w['top_item'],
             'top_val': item_w['top_val'],
             'top_mach': item_w['top_mach'],
             'categorias': dict(item_w['categorias'])
         })
 
-    pre_tot_f = sum(s['total'] for s in semanas_list if s['week'] < 22)
-    post_tot_f = sum(s['total'] for s in semanas_list if s['week'] >= 22)
-    num_post_weeks = max_wk_2026 - 21
+    pre_tot_f = sum(s['total'] for s in semanas_list if s['week'] < 24)
+    post_tot_f = sum(s['total'] for s in semanas_list if s['week'] >= 24)
+    num_pre_weeks = 23
+    num_post_weeks = max_wk_2026 - 23
 
     all_cats = list(cat_tot.keys())
     cat_comp = []
     for c in all_cats:
         pre_c = cat_pre[c]
         post_c = cat_post[c]
-        pre_m = pre_c / 21 if pre_c > 0 else 0
+        pre_m = pre_c / num_pre_weeks if pre_c > 0 else 0
         post_m = post_c / num_post_weeks if post_c > 0 else 0
         aum_pct = (((post_m / pre_m) - 1) * 100) if pre_m > 0 else (100.0 if post_c > 0 else 0.0)
         cat_comp.append({
@@ -617,9 +626,9 @@ for f in fleet_list:
         'maquinas_ranking': mach_ranking[:25],
         'pre_total': pre_tot_f,
         'post_total': post_tot_f,
-        'pre_media_sem': pre_tot_f / 21 if pre_tot_f > 0 else 0,
+        'pre_media_sem': pre_tot_f / num_pre_weeks if pre_tot_f > 0 else 0,
         'post_media_sem': post_tot_f / num_post_weeks if post_tot_f > 0 else 0,
-        'aumento_pct': (((post_tot_f / num_post_weeks) / (pre_tot_f / 21) - 1) * 100) if pre_tot_f > 0 else 100.0
+        'aumento_pct': (((post_tot_f / num_post_weeks) / (pre_tot_f / num_pre_weeks) - 1) * 100) if pre_tot_f > 0 else 100.0
     }
 
 print("Inteligência semanal de frotas calculada com sucesso!")
@@ -787,7 +796,8 @@ dashboard_bundle = {
     },
     'curva_s': curva_s,
     'familias': familias_oficiais,
-    'wk22_comparativo': wk22_comparativo_familias,
+    'wk24_comparativo': wk24_comparativo_familias,
+    'wk22_comparativo': wk24_comparativo_familias,
     'frotas_analytics': frotas_analytics,
     'rtg_analytics': frotas_analytics['RTG'],
     'itens_inflacao_top': itens_inflacao,

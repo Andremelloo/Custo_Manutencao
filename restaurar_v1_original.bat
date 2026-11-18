@@ -8,3 +8,4 @@ copy /Y versoes\v1_original\index.html index.html
 copy /Y versoes\v1_original\styles.css styles.css
 echo Pronto! Versao 1 (Original) restaurada.
 pause
+

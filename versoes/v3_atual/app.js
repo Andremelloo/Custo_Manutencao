@@ -222,8 +222,8 @@ function initCharts() {
     const labels = data.curva_s.map(c => `WK ${c.week < 10 ? '0' + c.week : c.week}`);
     const forecastVals = data.curva_s.map(c => c.forecast);
     const realVals = data.curva_s.map(c => c.real);
-    const pointColors = data.curva_s.map(c => c.week >= 22 ? '#ef4444' : '#10b981');
-    const pointRadii = data.curva_s.map(c => c.week === 22 ? 8 : (c.week % 4 === 0 ? 5 : 3));
+    const pointColors = data.curva_s.map(c => c.week >= 24 ? '#ef4444' : '#10b981');
+    const pointRadii = data.curva_s.map(c => c.week === 24 ? 8 : (c.week % 4 === 0 ? 5 : 3));
 
     chartCurvaS = new Chart(ctxCurvaS, {
       type: 'line',
@@ -274,7 +274,7 @@ function initCharts() {
                 const bal = item.forecast - item.real;
                 const balPct = item.forecast > 0 ? (bal / item.forecast * 100).toFixed(2) : 0;
                 const sign = bal >= 0 ? '+' : '';
-                const alertNote = item.week === 22 ? '\n🚨 PONTO DE INFLEXÃO (WK 22)' : '';
+                const alertNote = item.week === 24 ? '\n🚨 PONTO DE INFLEXÃO (WK 24)' : '';
                 return `\nBalanço: ${sign}${formatBRL(bal)} (${sign}${balPct}%)${alertNote}`;
               }
             }
@@ -357,13 +357,13 @@ function initCharts() {
         labels: labels,
         datasets: [
           {
-            label: 'Média Semanal Pré-WK22 (W01-W21)',
+            label: 'Média Semanal Pré-WK24 (W01-W23)',
             data: preVals,
             backgroundColor: 'rgba(56, 189, 248, 0.75)',
             borderRadius: 6
           },
           {
-            label: 'Média Semanal Pós-WK22 (W22-W44)',
+            label: 'Média Semanal Pós-WK24 (W24-W45)',
             data: postVals,
             backgroundColor: 'rgba(239, 68, 68, 0.85)',
             borderRadius: 6
@@ -620,13 +620,13 @@ function renderFleetResumoView() {
 
       <div class="glass-panel kpi-card negative">
         <div class="kpi-header">
-          <span class="kpi-title">Salto de Queima Semanal (Pós-WK22)</span>
+          <span class="kpi-title">Salto de Queima Semanal (Pós-WK24)</span>
           <span class="kpi-icon">📈</span>
         </div>
         <div class="kpi-value" style="color: var(--accent-red);">+${totalAumentoPct.toFixed(1)}%</div>
         <div class="kpi-sub">
-          <span>Pré-WK22: ${formatBRL(totalPreMedia)}/sem</span> &bull; 
-          <strong style="color: var(--accent-red);">Pós-WK22: ${formatBRL(totalPostMedia)}/sem</strong>
+          <span>Pré-WK24: ${formatBRL(totalPreMedia)}/sem</span> &bull; 
+          <strong style="color: var(--accent-red);">Pós-WK24: ${formatBRL(totalPostMedia)}/sem</strong>
         </div>
       </div>
 
@@ -635,10 +635,10 @@ function renderFleetResumoView() {
           <span class="kpi-title">Maior Ofensor Orçamentário (Nominal)</span>
           <span class="kpi-icon">🚛</span>
         </div>
-        <div class="kpi-value" style="font-size: 22px; color: var(--accent-red);">TT (Terminal Tractors)</div>
+        <div class="kpi-value" style="font-size: 22px; color: var(--accent-red);">TT (Terminal Tractor)</div>
         <div class="kpi-sub">
           <span>Estouro: -R$ 3,80 M (-54,5%)</span> &bull; 
-          <strong style="color: var(--accent-red);">Aceleração: +125,9%</strong>
+          <strong style="color: var(--accent-red);">Aceleração: +${(frotasAnalytics['TT'] ? frotasAnalytics['TT'].aumento_pct : 71.8).toFixed(1)}%</strong>
         </div>
       </div>
 
@@ -772,11 +772,11 @@ function renderFleetResumoView() {
                 <p>${formatBRL(info.budget)}</p>
               </div>
               <div class="family-metric-item">
-                <p>Ritmo Pré-WK22</p>
+                <p>Ritmo Pré-WK24</p>
                 <p>${formatBRL(f.pre_media_sem)}/sem</p>
               </div>
               <div class="family-metric-item">
-                <p>Ritmo Pós-WK22</p>
+                <p>Ritmo Pós-WK24</p>
                 <p style="color: var(--accent-red);">${formatBRL(f.post_media_sem)}/sem</p>
               </div>
             </div>
@@ -904,7 +904,7 @@ function renderResumoCharts(frotasAnalytics, fleetCodes) {
         labels: fleetLabels,
         datasets: [
           {
-            label: 'Ritmo Médio Pré-WK22 (W01-W21)',
+            label: 'Ritmo Médio Pré-WK24 (W01-W23)',
             data: preRates,
             backgroundColor: 'rgba(56, 189, 248, 0.85)',
             borderColor: '#38bdf8',
@@ -912,7 +912,7 @@ function renderResumoCharts(frotasAnalytics, fleetCodes) {
             borderRadius: 4
           },
           {
-            label: 'Ritmo Médio Pós-WK22 (W22-W44)',
+            label: 'Ritmo Médio Pós-WK24 (W24-W45)',
             data: postRates,
             backgroundColor: 'rgba(239, 68, 68, 0.85)',
             borderColor: '#ef4444',
@@ -997,7 +997,7 @@ function renderFleetKPIs(fleetData) {
       </div>
       <div class="kpi-value" style="color: var(--accent-red);">${formatBRL(fleetData.post_media_sem)}/sem</div>
       <div class="kpi-sub">
-        <span>Pré-WK22: ${formatBRL(fleetData.pre_media_sem)}/sem</span> &bull; 
+        <span>Pré-WK24: ${formatBRL(fleetData.pre_media_sem)}/sem</span> &bull; 
         <strong style="color: var(--accent-red);">Salto: +${fleetData.aumento_pct.toFixed(1)}%</strong>
       </div>
     </div>
@@ -1036,7 +1036,7 @@ function renderFleetCharts(fleetData) {
   const semanas = fleetData.semanas;
   const labels = semanas.map(s => `W${s.week < 10 ? '0' + s.week : s.week}`);
   const totals = semanas.map(s => s.total);
-  const barColors = semanas.map(s => s.week < 22 ? 'rgba(56, 189, 248, 0.85)' : 'rgba(239, 68, 68, 0.85)');
+  const barColors = semanas.map(s => s.week < 24 ? 'rgba(56, 189, 248, 0.85)' : 'rgba(239, 68, 68, 0.85)');
 
   // 1. Chart Frota Semanas
   const ctxSemanas = document.getElementById('chart-frota-semanas');
@@ -1057,8 +1057,8 @@ function renderFleetCharts(fleetData) {
           },
           {
             type: 'line',
-            label: `Média Semanal Pré-WK22 (${formatBRL(fleetData.pre_media_sem)})`,
-            data: semanas.map(s => s.week < 22 ? fleetData.pre_media_sem : null),
+            label: `Média Semanal Pré-WK24 (${formatBRL(fleetData.pre_media_sem)})`,
+            data: semanas.map(s => s.week < 24 ? fleetData.pre_media_sem : null),
             borderColor: '#38bdf8',
             borderWidth: 2,
             borderDash: [5, 5],
@@ -1067,8 +1067,8 @@ function renderFleetCharts(fleetData) {
           },
           {
             type: 'line',
-            label: `Média Semanal Pós-WK22 (${formatBRL(fleetData.post_media_sem)})`,
-            data: semanas.map(s => s.week >= 22 ? fleetData.post_media_sem : null),
+            label: `Média Semanal Pós-WK24 (${formatBRL(fleetData.post_media_sem)})`,
+            data: semanas.map(s => s.week >= 24 ? fleetData.post_media_sem : null),
             borderColor: '#ef4444',
             borderWidth: 2,
             borderDash: [5, 5],
@@ -1195,17 +1195,17 @@ function renderFleetWeeklyTable(filterType = 'TODAS') {
   `;
 
   const semanas = fleetData.semanas.filter(s => {
-    if (filterType === 'PRE') return s.week < 22;
-    if (filterType === 'POS') return s.week >= 22;
+    if (filterType === 'PRE') return s.week < 24;
+    if (filterType === 'POS') return s.week >= 24;
     return true;
   });
 
   tbody.innerHTML = semanas.map(s => {
-    const isPos = s.week >= 22;
+    const isPos = s.week >= 24;
     const isPeak = s.total > (fleetData.post_media_sem * 1.5);
     const periodBadge = isPos
-      ? '<span class="kpi-badge danger">Pós-WK22</span>'
-      : '<span class="kpi-badge" style="background: rgba(56, 189, 248, 0.2); color: var(--brand-cyan);">Pré-WK22</span>';
+      ? '<span class="kpi-badge danger">Pós-WK24</span>'
+      : '<span class="kpi-badge" style="background: rgba(56, 189, 248, 0.2); color: var(--brand-cyan);">Pré-WK24</span>';
 
     // Calculate sum of top 4 categories
     let topCatsSum = 0;
@@ -1290,7 +1290,7 @@ function renderFleetMachinesTable(fleetData) {
         <td style="vertical-align: top;">
           <strong style="font-size: 14px; color: var(--text-main);">${m.maquina}</strong>
           ${isTop3Mach ? '<span class="kpi-badge" style="display: inline-block; margin-left: 6px; background: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); font-size: 10px;">TOP GASTO</span>' : ''}
-          ${isSpike ? '<span class="kpi-badge" style="display: inline-block; margin-top: 4px; background: rgba(239, 68, 68, 0.2); color: var(--accent-red); font-size: 10px;">SALTO PÓS-WK22</span>' : ''}
+          ${isSpike ? '<span class="kpi-badge" style="display: inline-block; margin-top: 4px; background: rgba(239, 68, 68, 0.2); color: var(--accent-red); font-size: 10px;">SALTO PÓS-WK24</span>' : ''}
         </td>
         <td class="text-right" style="vertical-align: top; font-weight: 700; color: var(--brand-cyan);">
           ${formatBRL(preTot)}
@@ -1680,7 +1680,7 @@ function renderTransacoesPage() {
     return `
       <tr>
         <td class="font-semibold" style="white-space: nowrap;">${t.d}</td>
-        <td class="text-center font-bold"><span class="kpi-badge ${t.w >= 22 ? 'danger' : ''}">W${t.w}</span></td>
+        <td class="text-center font-bold"><span class="kpi-badge ${t.w >= 24 ? 'danger' : ''}">W${t.w}</span></td>
         <td class="text-center">${typeBadge}</td>
         <td>${codeBadge}</td>
         <td><span class="status-badge" style="background: rgba(56, 189, 248, 0.12); color: var(--brand-cyan);">${t.f}</span></td>
@@ -1747,8 +1747,8 @@ function applyFilters() {
   filteredTransactions = data.transacoes.filter(t => {
     if (typeFilter !== 'TODOS' && t.t !== typeFilter) return false;
     if (fam !== 'TODAS' && t.f !== fam) return false;
-    if (period === 'PRE_WK22' && t.w > 21) return false;
-    if (period === 'POS_WK22' && t.w < 22) return false;
+    if ((period === 'PRE_WK24' || period === 'PRE_WK22') && t.w > 23) return false;
+    if ((period === 'POS_WK24' || period === 'POS_WK22') && t.w < 24) return false;
 
     if (term) {
       const matchC = (t.c || '').toLowerCase().includes(term);

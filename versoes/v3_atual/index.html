@@ -82,7 +82,7 @@
     <nav class="nav-tabs">
       <button class="tab-btn active" id="tab-nav-visao-geral" onclick="switchTab('visao-geral')">📊 Visão Geral Executiva</button>
       <button class="tab-btn" id="tab-nav-frotas-analise" onclick="switchTab('frotas-analise')">🚜 Análise Semanal por Frota (W01 a W44)</button>
-      <button class="tab-btn" id="tab-nav-diagnostico-wk22" onclick="switchTab('diagnostico-wk22')">🚨 Inflexão Geral (WK 22)</button>
+      <button class="tab-btn" id="tab-nav-diagnostico-wk22" onclick="switchTab('diagnostico-wk22')">🚨 Inflexão Geral (WK 24)</button>
       <button class="tab-btn" id="tab-nav-comparativo-anos" onclick="switchTab('comparativo-anos')">⚖️ Comparativo 2025 vs 2026</button>
       <button class="tab-btn" id="tab-nav-deep-dive-frotas" onclick="switchTab('deep-dive-frotas')">📋 Todas as Frotas (Resumo)</button>
       <button class="tab-btn" id="tab-nav-tabela-analitica" onclick="switchTab('tabela-analitica')">🔍 Base Transacional & Exportação</button>
@@ -99,8 +99,8 @@
       <div class="alert-box alert-danger">
         <div class="alert-icon">⚠️</div>
         <div class="alert-content">
-          <h4>Alerta Orçamentário da Manutenção na Semana 44 (YTW)</h4>
-          <p>O custo acumulado total atingiu <strong>R$ 40.533.493,23</strong> frente a um orçamento planejado de <strong>R$ 30.776.307,69</strong>, gerando um desvio negativo de <strong>-R$ 9.757.185,54 (-31,70%)</strong>. A aceleração crítica teve início exato a partir da <strong>Semana 22</strong>, impulsionada pelas frotas de <strong>TT (-R$ 3,80M)</strong>, <strong>RTG (-R$ 2,36M)</strong> e <strong>Asset Disposal (-R$ 1,17M)</strong>.</p>
+          <h4>Alerta Orçamentário da Manutenção na Semana 45 (YTW)</h4>
+          <p>O custo acumulado total atingiu <strong>R$ 40.533.493,23</strong> frente a um orçamento planejado de <strong>R$ 30.776.307,69</strong>, gerando um desvio negativo de <strong>-R$ 9.757.185,54 (-31,70%)</strong>. A aceleração crítica teve início exato a partir da <strong>Semana 24</strong>, impulsionada pelas frotas de <strong>TT (-R$ 3,80M)</strong>, <strong>RTG (-R$ 2,36M)</strong> e <strong>Asset Disposal (-R$ 1,17M)</strong>.</p>
         </div>
       </div>
 
@@ -160,7 +160,7 @@
           <div class="chart-header">
             <div class="chart-title">
               <h3>Curva S de Custos Acumulados (WK 0 a WK 44)</h3>
-              <p>Comparação direta entre o Orçamento Planejado (Forecast) e o Custo Real executado, com destaque na Inflexão da WK 22.</p>
+              <p>Comparação direta entre o Orçamento Planejado (Forecast) e o Custo Real executado, com destaque na Inflexão da WK 24.</p>
             </div>
           </div>
           <div class="chart-wrapper">
@@ -218,11 +218,11 @@
       <div class="fleet-selector-bar">
         <span class="fleet-selector-label">Selecione a Frota:</span>
         <button class="fleet-pill-btn active" id="pill-fleet-RESUMO" onclick="selectFleetView('RESUMO')">📋 🔍 Resumo Geral das Frotas (W01 a W44)</button>
-        <button class="fleet-pill-btn" id="pill-fleet-TT" onclick="selectFleetView('TT')">🚛 TT (Terminal Tractors)</button>
-        <button class="fleet-pill-btn" id="pill-fleet-RTG" onclick="selectFleetView('RTG')">🏗️ RTG (Transtêineres)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-TT" onclick="selectFleetView('TT')">🚛 TT (Terminal Tractor)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-RTG" onclick="selectFleetView('RTG')">🏗️ RTG (TRANSTAINERS)</button>
         <button class="fleet-pill-btn" id="pill-fleet-STS" onclick="selectFleetView('STS')">⚓ STS (Ship-to-Shore)</button>
-        <button class="fleet-pill-btn" id="pill-fleet-RS" onclick="selectFleetView('RS')">🚜 RS (Reach Stackers)</button>
-        <button class="fleet-pill-btn" id="pill-fleet-EH" onclick="selectFleetView('EH')">📦 EH (Empilhadeiras Vazio)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-RS" onclick="selectFleetView('RS')">🚜 RS (REACH STACKERS)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-EH" onclick="selectFleetView('EH')">📦 EH (EMPILHADEIRAS VAZIO)</button>
         <button class="fleet-pill-btn" id="pill-fleet-MHC" onclick="selectFleetView('MHC')">🏗️ MHC (Guindastes Móveis)</button>
       </div>
 
@@ -232,8 +232,8 @@
         <div class="alert-box alert-info">
           <div class="alert-icon">🔍</div>
           <div class="alert-content">
-            <h4>🔍 Resumo dos Resultados Semanais por Frota (W01 a W44)</h4>
-            <p>Quadro executivo comparativo do desempenho orçamentário e queima de caixa de todas as frotas da TCP (TT, RTG, STS, RS, EH e MHC). Acompanhe a aceleração da queima semanal (R$/sem) após o ponto de inflexão da Semana 22 e o diagnóstico das peças e serviços ofensores.</p>
+            <h4>🔍 Resumo dos Resultados Semanais por Frota (W01 a W45)</h4>
+            <p>Quadro executivo comparativo do desempenho orçamentário e queima de caixa de todas as frotas da TCP (TT, RTG, STS, RS, EH e MHC). Acompanhe a aceleração da queima semanal (R$/sem) após o ponto de inflexão da Semana 24 e o diagnóstico das peças e serviços ofensores.</p>
           </div>
         </div>
 
@@ -246,7 +246,7 @@
         <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
           <div class="chart-header">
             <div class="chart-title">
-              <h3>🔍 Resumo dos Resultados Semanais por Frota (W01 a W44)</h3>
+              <h3>🔍 Resumo dos Resultados Semanais por Frota (W01 a W45)</h3>
               <p>Visão consolidada semana a semana de todas as 6 frotas operacionais. Clique no botão de detalhes ou na linha para abrir a análise técnica da frota.</p>
             </div>
           </div>
@@ -260,8 +260,8 @@
                   <th class="text-right">Budget YTD</th>
                   <th class="text-right">Balanço (R$)</th>
                   <th class="text-center">Balanço (%)</th>
-                  <th class="text-right">Ritmo Pré-WK22</th>
-                  <th class="text-right">Ritmo Pós-WK22</th>
+                  <th class="text-right">Ritmo Pré-WK24</th>
+                  <th class="text-right">Ritmo Pós-WK24</th>
                   <th class="text-center">Aceleração</th>
                   <th>Principais Vilões Identificados</th>
                   <th class="text-center">Ação</th>
@@ -280,11 +280,11 @@
           <div class="glass-panel chart-card col-12">
             <div class="chart-header">
               <div class="chart-title">
-                <h3>Comparativo da Evolução Semanal de Todas as Frotas (W01 a W44)</h3>
-                <p>Curvas de custo semanal para as 6 frotas operacionais da TCP. O traço vertical tracejado marca o início da aceleração na Semana 22.</p>
+                <h3>Comparativo da Evolução Semanal de Todas as Frotas (W01 a W45)</h3>
+                <p>Curvas de custo semanal para as 6 frotas operacionais da TCP. O traço vertical tracejado marca o início da aceleração na Semana 24.</p>
               </div>
               <div>
-                <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.2); color: var(--accent-red);">📌 WK 22: Ponto de Inflexão Global</span>
+                <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.2); color: var(--accent-red);">📌 WK 24: Ponto de Inflexão Global</span>
               </div>
             </div>
             <div class="chart-wrapper" style="min-height: 380px;">
@@ -296,8 +296,8 @@
           <div class="glass-panel chart-card col-12">
             <div class="chart-header">
               <div class="chart-title">
-                <h3>Ritmo Médio Semanal por Frota: Pré-WK22 vs Pós-WK22 (R$/semana)</h3>
-                <p>Queima média semanal comparando o período estável (W01-W21) contra o período de aceleração e reformas (W22-W44).</p>
+                <h3>Ritmo Médio Semanal por Frota: Pré-WK24 vs Pós-WK24 (R$/semana)</h3>
+                <p>Queima média semanal comparando o período estável (W01-W23) contra o período de aceleração e reformas (W24-W45).</p>
               </div>
             </div>
             <div class="chart-wrapper" style="min-height: 350px;">
@@ -342,12 +342,12 @@
           <div class="glass-panel chart-card col-12">
             <div class="chart-header">
               <div class="chart-title">
-                <h3 id="fleet-chart1-title">Evolução Semanal de Gastos (W01 a W44)</h3>
-                <p id="fleet-chart1-sub">Barras Azuis = Pré-Inflexão (W01-W21) | Barras Vermelhas = Pós-Inflexão (W22-W44). Linhas tracejadas indicam a média semanal de cada período.</p>
+                <h3 id="fleet-chart1-title">Evolução Semanal de Gastos (W01 a W45)</h3>
+                <p id="fleet-chart1-sub">Barras Azuis = Pré-Inflexão (W01-W23) | Barras Vermelhas = Pós-Inflexão (W24-W45). Linhas tracejadas indicam a média semanal de cada período.</p>
               </div>
               <div style="display: flex; gap: 8px;">
-                <span class="kpi-badge" style="background: rgba(56, 189, 248, 0.2); color: var(--brand-cyan);">■ W01-W21 (Pré-WK22)</span>
-                <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.2); color: var(--accent-red);">■ W22-W44 (Pós-WK22)</span>
+                <span class="kpi-badge" style="background: rgba(56, 189, 248, 0.2); color: var(--brand-cyan);">■ W01-W23 (Pré-WK24)</span>
+                <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.2); color: var(--accent-red);">■ W24-W45 (Pós-WK24)</span>
               </div>
             </div>
             <div class="chart-wrapper" style="min-height: 360px;">
@@ -373,13 +373,13 @@
         <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
           <div class="table-controls">
             <div>
-              <h3 style="font-size: 18px; font-weight: 700;" id="fleet-table-title">Tabela Semana a Semana da Frota (W01 a W44)</h3>
+              <h3 style="font-size: 18px; font-weight: 700;" id="fleet-table-title">Tabela Semana a Semana da Frota (W01 a W45)</h3>
               <p style="font-size: 12px; color: var(--text-muted);">Visualize todos os valores divididos por componente e o principal evento/máquina de manutenção de cada semana.</p>
             </div>
             <div style="display: flex; gap: 8px;">
-              <button class="btn-filter-quick active" id="btn-fleet-filter-all" onclick="filterFleetTable('TODAS')">Todas as Semanas (W01-W44)</button>
-              <button class="btn-filter-quick" id="btn-fleet-filter-pre" onclick="filterFleetTable('PRE')">W00 a W21 (Pré-Inflexão)</button>
-              <button class="btn-filter-quick" id="btn-fleet-filter-pos" onclick="filterFleetTable('POS')">W22 a W44 (Pós-Inflexão)</button>
+              <button class="btn-filter-quick active" id="btn-fleet-filter-all" onclick="filterFleetTable('TODAS')">Todas as Semanas (W01-W45)</button>
+              <button class="btn-filter-quick" id="btn-fleet-filter-pre" onclick="filterFleetTable('PRE')">W01 a W23 (Pré-Inflexão)</button>
+              <button class="btn-filter-quick" id="btn-fleet-filter-pos" onclick="filterFleetTable('POS')">W24 a W45 (Pós-Inflexão)</button>
             </div>
           </div>
           <div class="table-responsive">
@@ -398,8 +398,8 @@
         <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
           <div class="chart-header">
             <div class="chart-title">
-              <h3 id="fleet-mach-title">Ranking das Máquinas Mais Custosas da Frota (Pré vs Pós-WK 22)</h3>
-              <p>Valores gastos em cada equipamento específico antes e depois da Semana 22.</p>
+              <h3 id="fleet-mach-title">Ranking das Máquinas Mais Custosas da Frota (Pré vs Pós-WK 24)</h3>
+              <p>Valores gastos em cada equipamento específico antes e depois da Semana 24.</p>
             </div>
           </div>
           <div class="table-responsive">
@@ -407,11 +407,11 @@
               <thead>
                 <tr>
                   <th style="min-width: 140px;">Equipamento / Máquina</th>
-                  <th class="text-right" style="min-width: 130px;">Gasto Pré-WK22<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W01 a W21)</span></th>
-                  <th style="min-width: 280px;">📦 Top 3 Peças/Serviços Pré-WK22<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
-                  <th class="text-right" style="min-width: 130px;">Gasto Pós-WK22<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W22 a W44)</span></th>
-                  <th style="min-width: 280px;">🚨 Top 3 Peças/Serviços Pós-WK22<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
-                  <th class="text-right" style="min-width: 140px;">Total Acumulado<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W44)</span></th>
+                  <th class="text-right" style="min-width: 130px;">Gasto Pré-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W01 a W23)</span></th>
+                  <th style="min-width: 280px;">📦 Top 3 Peças/Serviços Pré-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
+                  <th class="text-right" style="min-width: 130px;">Gasto Pós-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W24 a W45)</span></th>
+                  <th style="min-width: 280px;">🚨 Top 3 Peças/Serviços Pós-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
+                  <th class="text-right" style="min-width: 140px;">Total Acumulado<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W45)</span></th>
                 </tr>
               </thead>
               <tbody id="tbody-frota-maquinas">
@@ -424,22 +424,31 @@
 
     </section>
 
-    <!-- ==================== TAB 3: DIAGNÓSTICO DA INFLEXÃO WK 22 ==================== -->
+    <!-- ==================== TAB 3: DIAGNÓSTICO DA INFLEXÃO WK 24 ==================== -->
     <section id="tab-diagnostico-wk22" class="tab-section">
       
       <div class="alert-box alert-info">
         <div class="alert-icon">🔎</div>
         <div class="alert-content">
-          <h4>Por que o gráfico empinou exatamente na Semana 22?</h4>
-          <p>Até a Semana 21, o custo acumulado caminhava próximo do orçamento (R$ 15,07M real vs R$ 13,98M meta), com gasto médio de <strong>R$ 645.333/semana</strong>. A partir da <strong>Semana 22</strong>, o gasto médio semanal disparou para <strong>R$ 1.189.812/semana (+84,4% de aumento)</strong>. Esse salto decorreu da confluência de 4 fatores estruturais simultâneos:</p>
+          <h4>Por que o gráfico empinou a partir da Semana 24?</h4>
+          <p>Até a Semana 23, o custo semanal médio era de <strong>R$ 1.127.029/semana</strong> (R$ 25,92M acumulados). A partir da <strong>Semana 24</strong>, o gasto médio disparou para <strong>R$ 1.489.794/semana (+32,2% global)</strong>, puxado pela confluência de paradas corretivas e reformas em frotas críticas como <strong>TT (Terminal Tractor)</strong> (+71,8%), <strong>EH (EMPILHADEIRAS VAZIO)</strong> (+32,0%), <strong>STS</strong> (+28,7%), <strong>RS (REACH STACKERS)</strong> (+21,0%) e <strong>RTG (TRANSTAINERS)</strong> (+18,1%):</p>
         </div>
       </div>
 
-      <!-- 4 Pillars of the WK22 Surge -->
+      <!-- 4 Pillars of the Surge -->
       <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
         <div class="glass-panel kpi-card negative">
           <div class="kpi-header">
-            <span class="kpi-title">1. Descarte de Ativos (Asset Disposal)</span>
+            <span class="kpi-title">1. Ciclo Concentrado de Pneus & Eixos TT</span>
+            <span class="kpi-icon">🚛</span>
+          </div>
+          <div class="kpi-value" style="color: var(--accent-red);">R$ 6,74 M</div>
+          <div class="kpi-sub">Salto de +71,8% pós-WK24 (967 pneus Michelin e eixos tandem CH).</div>
+        </div>
+
+        <div class="glass-panel kpi-card negative">
+          <div class="kpi-header">
+            <span class="kpi-title">2. Descarte de Ativos (Asset Disposal)</span>
             <span class="kpi-icon">🗑️</span>
           </div>
           <div class="kpi-value" style="color: var(--accent-red);">R$ 3,47 M</div>
@@ -448,20 +457,11 @@
 
         <div class="glass-panel kpi-card negative">
           <div class="kpi-header">
-            <span class="kpi-title">2. Ciclo Crítico de Pneus & Eixos TT</span>
-            <span class="kpi-icon">🚛</span>
-          </div>
-          <div class="kpi-value" style="color: var(--accent-red);">R$ 2,93 M</div>
-          <div class="kpi-sub">967 pneus (R$ 1,69M) e reformas de eixos tandem CH (R$ 1,24M) concentrados.</div>
-        </div>
-
-        <div class="glass-panel kpi-card negative">
-          <div class="kpi-header">
             <span class="kpi-title">3. Paradas Corretivas RTG</span>
             <span class="kpi-icon">🏗️</span>
           </div>
-          <div class="kpi-value" style="color: var(--accent-red);">R$ 2,13 M</div>
-          <div class="kpi-sub">132 freios de gantry (R$ 980k), 13 geradores (R$ 467k) e bombas injetoras.</div>
+          <div class="kpi-value" style="color: var(--accent-red);">R$ 8,25 M</div>
+          <div class="kpi-sub">Ritmo de R$ 375k/sem pós-WK24 (132 freios gantry, 13 geradores e bombas injetoras).</div>
         </div>
 
         <div class="glass-panel kpi-card negative">
@@ -469,18 +469,18 @@
             <span class="kpi-title">4. Cabos STS & Normativas NR-12</span>
             <span class="kpi-icon">⚓</span>
           </div>
-          <div class="kpi-value" style="color: var(--accent-red);">R$ 1,18 M</div>
+          <div class="kpi-value" style="color: var(--accent-red);">R$ 2,02 M</div>
           <div class="kpi-sub">Troca de cabos Bridon STS#08/#07/#11 (R$ 725k) e certificações LRQA (R$ 217k).</div>
         </div>
       </div>
 
-      <!-- Charts Row for WK22 -->
+      <!-- Charts Row for WK24 -->
       <div class="charts-grid">
         <div class="glass-panel chart-card col-6">
           <div class="chart-header">
             <div class="chart-title">
-              <h3>Média Semanal de Gasto: Antes vs Depois da WK 22 (R$/semana)</h3>
-              <p>Comparativo direto do ritmo de queima orçamentária por família antes (W01-W21) e depois (W22-W44).</p>
+              <h3>Média Semanal de Gasto: Antes vs Depois da WK 24 (R$/semana)</h3>
+              <p>Comparativo direto do ritmo de queima orçamentária por família antes (W01-W23) e depois (W24-W45).</p>
             </div>
           </div>
           <div class="chart-wrapper">
@@ -492,7 +492,7 @@
           <div class="chart-header">
             <div class="chart-title">
               <h3>Evolução das Maiores Despesas da Inflexão</h3>
-              <p>Top lançamentos de maior impacto financeiro contratados a partir da Semana 22.</p>
+              <p>Top lançamentos de maior impacto financeiro contratados a partir da Semana 24.</p>
             </div>
           </div>
           <div class="chart-wrapper">
@@ -505,7 +505,7 @@
       <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
         <div class="chart-header">
           <div class="chart-title">
-            <h3>Quadro Comparativo de Aceleração por Família (Pré vs Pós-WK 22)</h3>
+            <h3>Quadro Comparativo de Aceleração por Família (Pré vs Pós-WK 24)</h3>
             <p>Variação percentual e nominal do gasto médio semanal que provocou o desvio da meta.</p>
           </div>
         </div>
@@ -514,9 +514,9 @@
             <thead>
               <tr>
                 <th>Família de Equipamento</th>
-                <th class="text-right">Total Pré-WK22 (W01-W21)</th>
+                <th class="text-right">Total Pré-WK24 (W01-W23)</th>
                 <th class="text-right">Média Semanal Pré (R$)</th>
-                <th class="text-right">Total Pós-WK22 (W22-W44)</th>
+                <th class="text-right">Total Pós-WK24 (W24-W45)</th>
                 <th class="text-right">Média Semanal Pós (R$)</th>
                 <th class="text-center">Aceleração (%)</th>
                 <th>Impacto no Desvio</th>
@@ -759,8 +759,8 @@
             <label class="filter-label" for="filtro-periodo-select">Período:</label>
             <select id="filtro-periodo-select" class="select-control" onchange="handlePeriodFilter(this.value)">
               <option value="TODAS">Ano Completo (W01 a W45)</option>
-              <option value="PRE_WK22">Pré-Inflexão (W01 a W21)</option>
-              <option value="POS_WK22">Pós-Inflexão (W22 a W45)</option>
+              <option value="PRE_WK24">Pré-Inflexão (W01 a W23)</option>
+              <option value="POS_WK24">Pós-Inflexão (W24 a W45)</option>
             </select>
 
             <button class="btn-action" onclick="exportToExcel()">

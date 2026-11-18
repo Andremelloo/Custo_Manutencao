@@ -8,3 +8,4 @@ copy /Y versoes\v3_atual\index.html index.html
 copy /Y versoes\v3_atual\styles.css styles.css
 echo Pronto! Versao 3 (Atual) restaurada.
 pause
+

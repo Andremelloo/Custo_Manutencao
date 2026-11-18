@@ -8,3 +8,4 @@ copy /Y versoes\v2_code_qty\index.html index.html
 copy /Y versoes\v2_code_qty\styles.css styles.css
 echo Pronto! Versao 2 (Code e QTY) restaurada.
 pause
+
