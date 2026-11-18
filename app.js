@@ -222,8 +222,8 @@ function initCharts() {
     const labels = data.curva_s.map(c => `WK ${c.week < 10 ? '0' + c.week : c.week}`);
     const forecastVals = data.curva_s.map(c => c.forecast);
     const realVals = data.curva_s.map(c => c.real);
-    const pointColors = data.curva_s.map(c => c.week >= 24 ? '#ef4444' : '#10b981');
-    const pointRadii = data.curva_s.map(c => c.week === 24 ? 8 : (c.week % 4 === 0 ? 5 : 3));
+    const pointColors = data.curva_s.map(c => c.week >= 24 ? '#ef4444' : '#0284c7');
+    const pointRadii = data.curva_s.map(c => c.week === 24 ? 9 : (c.week % 4 === 0 ? 5 : 3.5));
 
     chartCurvaS = new Chart(ctxCurvaS, {
       type: 'line',
@@ -359,13 +359,17 @@ function initCharts() {
           {
             label: 'Média Semanal Pré-WK24 (W01-W23)',
             data: preVals,
-            backgroundColor: 'rgba(56, 189, 248, 0.75)',
+            backgroundColor: 'rgba(2, 132, 199, 0.85)',
+            borderColor: '#0284c7',
+            borderWidth: 1.5,
             borderRadius: 6
           },
           {
-            label: 'Média Semanal Pós-WK24 (W24-W45)',
+            label: 'Média Semanal Pós-WK24 (W24-W44)',
             data: postVals,
             backgroundColor: 'rgba(239, 68, 68, 0.85)',
+            borderColor: '#dc2626',
+            borderWidth: 1.5,
             borderRadius: 6
           }
         ]
@@ -686,8 +690,8 @@ function renderFleetResumoView() {
               ${sign}${info.balance_pct.toFixed(2)}%
             </span>
           </td>
-          <td class="text-right">${formatBRL(f.pre_media_sem)}/sem</td>
-          <td class="text-right font-bold" style="color: var(--accent-red);">${formatBRL(f.post_media_sem)}/sem</td>
+          <td class="text-right" style="color: #0284c7; font-weight: 600;">${formatBRL(f.pre_media_sem)}/sem</td>
+          <td class="text-right font-bold" style="color: #dc2626;">${formatBRL(f.post_media_sem)}/sem</td>
           <td class="text-center">
             <span class="kpi-badge" style="background: ${isSpike ? 'rgba(239, 68, 68, 0.2)' : (f.aumento_pct < 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(245, 158, 11, 0.2)')}; color: ${isSpike ? 'var(--accent-red)' : (f.aumento_pct < 0 ? 'var(--accent-green)' : 'var(--accent-yellow)')}; font-weight: 700;">
               ${f.aumento_pct > 0 ? '+' : ''}${f.aumento_pct.toFixed(1)}%
@@ -718,8 +722,8 @@ function renderFleetResumoView() {
             ${totalBalancePct.toFixed(2)}%
           </span>
         </td>
-        <td class="text-right">${formatBRL(totalPreMedia)}/sem</td>
-        <td class="text-right" style="color: var(--accent-red);">${formatBRL(totalPostMedia)}/sem</td>
+        <td class="text-right" style="color: #0284c7; font-weight: 700;">${formatBRL(totalPreMedia)}/sem</td>
+        <td class="text-right" style="color: #dc2626; font-weight: 700;">${formatBRL(totalPostMedia)}/sem</td>
         <td class="text-center">
           <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.25); color: var(--accent-red); font-weight: 800;">
             +${totalAumentoPct.toFixed(1)}%
@@ -847,6 +851,31 @@ function renderResumoCharts(frotasAnalytics, fleetCodes) {
         labels: labels,
         datasets: datasets
       },
+      plugins: [
+        {
+          id: 'wk24ResumoLine',
+          afterDraw: (chart) => {
+            const ctx = chart.ctx;
+            const xAxis = chart.scales.x;
+            const yAxis = chart.scales.y;
+            const xPos = xAxis.getPixelForValue(23); // W24
+            if (xPos) {
+              ctx.save();
+              ctx.setLineDash([5, 4]);
+              ctx.strokeStyle = '#ef4444';
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.moveTo(xPos, yAxis.top);
+              ctx.lineTo(xPos, yAxis.bottom);
+              ctx.stroke();
+              ctx.fillStyle = '#ef4444';
+              ctx.font = 'bold 11px Outfit, sans-serif';
+              ctx.fillText('🚨 Inflexão WK24', xPos + 6, yAxis.top + 16);
+              ctx.restore();
+            }
+          }
+        }
+      ],
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -889,7 +918,7 @@ function renderResumoCharts(frotasAnalytics, fleetCodes) {
     });
   }
 
-  // Chart 2: Burn rate pre vs post WK22 side by side
+  // Chart 2: Burn rate pre vs post WK24 side by side
   const ctxRitmo = document.getElementById('chart-resumo-ritmo');
   if (ctxRitmo) {
     if (chartResumoRitmo) chartResumoRitmo.destroy();
@@ -906,18 +935,18 @@ function renderResumoCharts(frotasAnalytics, fleetCodes) {
           {
             label: 'Ritmo Médio Pré-WK24 (W01-W23)',
             data: preRates,
-            backgroundColor: 'rgba(56, 189, 248, 0.85)',
-            borderColor: '#38bdf8',
-            borderWidth: 1,
-            borderRadius: 4
+            backgroundColor: 'rgba(2, 132, 199, 0.85)',
+            borderColor: '#0284c7',
+            borderWidth: 1.5,
+            borderRadius: 6
           },
           {
-            label: 'Ritmo Médio Pós-WK24 (W24-W45)',
+            label: 'Ritmo Médio Pós-WK24 (W24-W44)',
             data: postRates,
             backgroundColor: 'rgba(239, 68, 68, 0.85)',
-            borderColor: '#ef4444',
-            borderWidth: 1,
-            borderRadius: 4
+            borderColor: '#dc2626',
+            borderWidth: 1.5,
+            borderRadius: 6
           }
         ]
       },
@@ -1036,7 +1065,8 @@ function renderFleetCharts(fleetData) {
   const semanas = fleetData.semanas;
   const labels = semanas.map(s => `W${s.week < 10 ? '0' + s.week : s.week}`);
   const totals = semanas.map(s => s.total);
-  const barColors = semanas.map(s => s.week < 24 ? 'rgba(56, 189, 248, 0.85)' : 'rgba(239, 68, 68, 0.85)');
+  const barColors = semanas.map(s => s.week < 24 ? 'rgba(2, 132, 199, 0.85)' : 'rgba(239, 68, 68, 0.85)');
+  const borderColors = semanas.map(s => s.week < 24 ? '#0284c7' : '#dc2626');
 
   // 1. Chart Frota Semanas
   const ctxSemanas = document.getElementById('chart-frota-semanas');
@@ -1053,15 +1083,17 @@ function renderFleetCharts(fleetData) {
             label: `Gasto Semanal ${fleetData.info.nome} (R$)`,
             data: totals,
             backgroundColor: barColors,
+            borderColor: borderColors,
+            borderWidth: 1.5,
             borderRadius: 4
           },
           {
             type: 'line',
             label: `Média Semanal Pré-WK24 (${formatBRL(fleetData.pre_media_sem)})`,
             data: semanas.map(s => s.week < 24 ? fleetData.pre_media_sem : null),
-            borderColor: '#38bdf8',
-            borderWidth: 2,
-            borderDash: [5, 5],
+            borderColor: '#0284c7',
+            borderWidth: 2.5,
+            borderDash: [6, 4],
             pointRadius: 0,
             fill: false
           },
@@ -1069,14 +1101,41 @@ function renderFleetCharts(fleetData) {
             type: 'line',
             label: `Média Semanal Pós-WK24 (${formatBRL(fleetData.post_media_sem)})`,
             data: semanas.map(s => s.week >= 24 ? fleetData.post_media_sem : null),
-            borderColor: '#ef4444',
-            borderWidth: 2,
-            borderDash: [5, 5],
+            borderColor: '#dc2626',
+            borderWidth: 2.5,
+            borderDash: [6, 4],
             pointRadius: 0,
             fill: false
           }
         ]
       },
+      plugins: [
+        {
+          id: 'wk24Divider',
+          afterDraw: (chart) => {
+            const ctx = chart.ctx;
+            const xAxis = chart.scales.x;
+            const yAxis = chart.scales.y;
+            const xPos = xAxis.getPixelForValue(23); // index of W24
+            if (xPos) {
+              const barWidth = xAxis.width / labels.length;
+              const dividerX = xPos - (barWidth / 2);
+              ctx.save();
+              ctx.setLineDash([4, 4]);
+              ctx.strokeStyle = '#ef4444';
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.moveTo(dividerX, yAxis.top);
+              ctx.lineTo(dividerX, yAxis.bottom);
+              ctx.stroke();
+              ctx.fillStyle = '#ef4444';
+              ctx.font = 'bold 11px Outfit, sans-serif';
+              ctx.fillText('🚨 Inflexão WK24', dividerX + 4, yAxis.top + 14);
+              ctx.restore();
+            }
+          }
+        }
+      ],
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -1204,8 +1263,8 @@ function renderFleetWeeklyTable(filterType = 'TODAS') {
     const isPos = s.week >= 24;
     const isPeak = s.total > (fleetData.post_media_sem * 1.5);
     const periodBadge = isPos
-      ? '<span class="kpi-badge danger">Pós-WK24</span>'
-      : '<span class="kpi-badge" style="background: rgba(56, 189, 248, 0.2); color: var(--brand-cyan);">Pré-WK24</span>';
+      ? '<span class="kpi-badge danger" style="background: rgba(239, 68, 68, 0.18); color: #ef4444; font-weight: 700; border: 1px solid rgba(239, 68, 68, 0.4);">■ Pós-WK24</span>'
+      : '<span class="kpi-badge" style="background: rgba(2, 132, 199, 0.18); color: #0284c7; font-weight: 700; border: 1px solid rgba(2, 132, 199, 0.4);">■ Pré-WK24</span>';
 
     // Calculate sum of top 4 categories
     let topCatsSum = 0;
@@ -1243,8 +1302,8 @@ function formatTopItemsList(items, isPost) {
     return '<span style="color: var(--text-dim); font-size: 12px; font-style: italic;">Nenhum gasto relevante</span>';
   }
 
-  const badgeColor = isPost ? 'var(--accent-red)' : 'var(--brand-cyan)';
-  const icon = isPost ? '🔺' : '🔹';
+  const badgeColor = isPost ? '#dc2626' : '#0284c7';
+  const icon = isPost ? '🔴' : '🔵';
 
   return `
     <div style="display: flex; flex-direction: column; gap: 6px;">
@@ -1292,16 +1351,16 @@ function renderFleetMachinesTable(fleetData) {
           ${isTop3Mach ? '<span class="kpi-badge" style="display: inline-block; margin-left: 6px; background: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); font-size: 10px;">TOP GASTO</span>' : ''}
           ${isSpike ? '<span class="kpi-badge" style="display: inline-block; margin-top: 4px; background: rgba(239, 68, 68, 0.2); color: var(--accent-red); font-size: 10px;">SALTO PÓS-WK24</span>' : ''}
         </td>
-        <td class="text-right" style="vertical-align: top; font-weight: 700; color: var(--brand-cyan);">
+        <td class="text-right" style="vertical-align: top; font-weight: 700; color: #0284c7;">
           ${formatBRL(preTot)}
         </td>
-        <td style="vertical-align: top; max-width: 320px; background: rgba(56, 189, 248, 0.02);">
+        <td style="vertical-align: top; max-width: 320px; background: rgba(2, 132, 199, 0.04); border-left: 2px solid rgba(2, 132, 199, 0.3);">
           ${formatTopItemsList(m.top_pre, false)}
         </td>
-        <td class="text-right" style="vertical-align: top; font-weight: 700; color: var(--accent-red);">
+        <td class="text-right" style="vertical-align: top; font-weight: 700; color: #dc2626;">
           ${formatBRL(postTot)}
         </td>
-        <td style="vertical-align: top; max-width: 320px; background: rgba(239, 68, 68, 0.02);">
+        <td style="vertical-align: top; max-width: 320px; background: rgba(239, 68, 68, 0.04); border-left: 2px solid rgba(239, 68, 68, 0.3);">
           ${formatTopItemsList(m.top_post, true)}
         </td>
         <td class="text-right font-bold" style="vertical-align: top; font-size: 14px; color: var(--text-main);">
@@ -1410,9 +1469,9 @@ function renderTabelaWK22() {
     return `
       <tr>
         <td class="font-bold">${item.family}</td>
-        <td class="text-right">${formatBRL(item.pre_total)}</td>
-        <td class="text-right font-semibold">${formatBRL(item.pre_media_sem)}</td>
-        <td class="text-right">${formatBRL(item.post_total)}</td>
+        <td class="text-right" style="color: #0284c7; font-weight: 600;">${formatBRL(item.pre_total)}</td>
+        <td class="text-right font-semibold" style="color: #0284c7;">${formatBRL(item.pre_media_sem)}</td>
+        <td class="text-right" style="color: #dc2626; font-weight: 600;">${formatBRL(item.post_total)}</td>
         <td class="text-right font-semibold" style="color: ${color};">${formatBRL(item.post_media_sem)}</td>
         <td class="text-center font-bold" style="color: ${color};">${sign}${item.aumento_pct.toFixed(1)}%</td>
         <td style="font-size: 12px; color: var(--text-muted);">${causa}</td>

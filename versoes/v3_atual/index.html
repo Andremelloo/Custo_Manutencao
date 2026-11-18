@@ -297,7 +297,7 @@
             <div class="chart-header">
               <div class="chart-title">
                 <h3>Ritmo Médio Semanal por Frota: Pré-WK24 vs Pós-WK24 (R$/semana)</h3>
-                <p>Queima média semanal comparando o período estável (W01-W23) contra o período de aceleração e reformas (W24-W45).</p>
+                <p><span style="color: #0284c7; font-weight: 700;">■ Barras Azuis = Pré-Inflexão (W01-W23)</span> | <span style="color: #ef4444; font-weight: 700;">■ Barras Vermelhas = Pós-Inflexão (W24-W44)</span>. Queima média semanal comparativa.</p>
               </div>
             </div>
             <div class="chart-wrapper" style="min-height: 350px;">
@@ -342,12 +342,15 @@
           <div class="glass-panel chart-card col-12">
             <div class="chart-header">
               <div class="chart-title">
-                <h3 id="fleet-chart1-title">Evolução Semanal de Gastos (W01 a W45)</h3>
-                <p id="fleet-chart1-sub">Barras Azuis = Pré-Inflexão (W01-W23) | Barras Vermelhas = Pós-Inflexão (W24-W45). Linhas tracejadas indicam a média semanal de cada período.</p>
+                <h3 id="fleet-chart1-title">Evolução Semanal de Gastos (W01 a W44)</h3>
+                <p id="fleet-chart1-sub">
+                  <span style="color: #0284c7; font-weight: 700;">■ Barras Azuis = Pré-Inflexão (W01-W23)</span> | 
+                  <span style="color: #ef4444; font-weight: 700;">■ Barras Vermelhas = Pós-Inflexão (W24-W44)</span>. Linhas tracejadas indicam a média semanal de cada período.
+                </p>
               </div>
               <div style="display: flex; gap: 8px;">
-                <span class="kpi-badge" style="background: rgba(56, 189, 248, 0.2); color: var(--brand-cyan);">■ W01-W23 (Pré-WK24)</span>
-                <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.2); color: var(--accent-red);">■ W24-W45 (Pós-WK24)</span>
+                <span class="kpi-badge" style="background: rgba(2, 132, 199, 0.18); color: #0284c7; font-weight: 700; border: 1px solid rgba(2, 132, 199, 0.4);">■ W01-W23 (Pré-WK24)</span>
+                <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.18); color: #ef4444; font-weight: 700; border: 1px solid rgba(239, 68, 68, 0.4);">■ W24-W44 (Pós-WK24)</span>
               </div>
             </div>
             <div class="chart-wrapper" style="min-height: 360px;">
@@ -377,9 +380,9 @@
               <p style="font-size: 12px; color: var(--text-muted);">Visualize todos os valores divididos por componente e o principal evento/máquina de manutenção de cada semana.</p>
             </div>
             <div style="display: flex; gap: 8px;">
-              <button class="btn-filter-quick active" id="btn-fleet-filter-all" onclick="filterFleetTable('TODAS')">Todas as Semanas (W01-W45)</button>
-              <button class="btn-filter-quick" id="btn-fleet-filter-pre" onclick="filterFleetTable('PRE')">W01 a W23 (Pré-Inflexão)</button>
-              <button class="btn-filter-quick" id="btn-fleet-filter-pos" onclick="filterFleetTable('POS')">W24 a W45 (Pós-Inflexão)</button>
+              <button class="btn-filter-quick active" id="btn-fleet-filter-all" onclick="filterFleetTable('TODAS')">Todas as Semanas (W01-W44)</button>
+              <button class="btn-filter-quick" id="btn-fleet-filter-pre" onclick="filterFleetTable('PRE')">🔵 W01 a W23 (Pré-Inflexão)</button>
+              <button class="btn-filter-quick" id="btn-fleet-filter-pos" onclick="filterFleetTable('POS')">🔴 W24 a W44 (Pós-Inflexão)</button>
             </div>
           </div>
           <div class="table-responsive">
@@ -407,11 +410,11 @@
               <thead>
                 <tr>
                   <th style="min-width: 140px;">Equipamento / Máquina</th>
-                  <th class="text-right" style="min-width: 130px;">Gasto Pré-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W01 a W23)</span></th>
-                  <th style="min-width: 280px;">📦 Top 3 Peças/Serviços Pré-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
-                  <th class="text-right" style="min-width: 130px;">Gasto Pós-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W24 a W45)</span></th>
-                  <th style="min-width: 280px;">🚨 Top 3 Peças/Serviços Pós-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
-                  <th class="text-right" style="min-width: 140px;">Total Acumulado<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W45)</span></th>
+                  <th class="text-right" style="min-width: 130px; color: #0284c7;">🔵 Gasto Pré-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W01 a W23)</span></th>
+                  <th style="min-width: 280px; color: #0284c7;">📦 Top 3 Peças/Serviços Pré-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
+                  <th class="text-right" style="min-width: 130px; color: #ef4444;">🔴 Gasto Pós-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W24 a W44)</span></th>
+                  <th style="min-width: 280px; color: #ef4444;">🚨 Top 3 Peças/Serviços Pós-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
+                  <th class="text-right" style="min-width: 140px;">Total Acumulado<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W44)</span></th>
                 </tr>
               </thead>
               <tbody id="tbody-frota-maquinas">
@@ -480,7 +483,7 @@
           <div class="chart-header">
             <div class="chart-title">
               <h3>Média Semanal de Gasto: Antes vs Depois da WK 24 (R$/semana)</h3>
-              <p>Comparativo direto do ritmo de queima orçamentária por família antes (W01-W23) e depois (W24-W45).</p>
+              <p><span style="color: #0284c7; font-weight: 700;">■ Barras Azuis = Pré-Inflexão (W01-W23)</span> | <span style="color: #ef4444; font-weight: 700;">■ Barras Vermelhas = Pós-Inflexão (W24-W44)</span>. Comparativo direto por família.</p>
             </div>
           </div>
           <div class="chart-wrapper">
@@ -514,10 +517,10 @@
             <thead>
               <tr>
                 <th>Família de Equipamento</th>
-                <th class="text-right">Total Pré-WK24 (W01-W23)</th>
-                <th class="text-right">Média Semanal Pré (R$)</th>
-                <th class="text-right">Total Pós-WK24 (W24-W45)</th>
-                <th class="text-right">Média Semanal Pós (R$)</th>
+                <th class="text-right" style="color: #0284c7;">🔵 Total Pré-WK24 (W01-W23)</th>
+                <th class="text-right" style="color: #0284c7;">🔵 Média Semanal Pré (R$)</th>
+                <th class="text-right" style="color: #ef4444;">🔴 Total Pós-WK24 (W24-W44)</th>
+                <th class="text-right" style="color: #ef4444;">🔴 Média Semanal Pós (R$)</th>
                 <th class="text-center">Aceleração (%)</th>
                 <th>Impacto no Desvio</th>
               </tr>
