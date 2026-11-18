@@ -416,7 +416,11 @@ function initCharts() {
   const ctxImpactoPreco = document.getElementById('chart-impacto-preco');
   if (ctxImpactoPreco) {
     const top10 = data.itens_inflacao_top.slice(0, 10);
-    const labels = top10.map(i => i.desc.length > 30 ? i.desc.substring(0, 28) + '...' : i.desc);
+    const labels = top10.map(i => {
+      const codePart = (i.code && i.code !== '-') ? `[${i.code}] ` : '';
+      const fullText = codePart + i.desc;
+      return fullText.length > 28 ? fullText.substring(0, 26) + '...' : fullText;
+    });
     const impactos = top10.map(i => i.impacto_preco);
 
     chartImpactoPreco = new Chart(ctxImpactoPreco, {
@@ -437,13 +441,18 @@ function initCharts() {
           legend: { display: false },
           tooltip: {
             callbacks: {
+              title: function(context) {
+                const it = top10[context[0].dataIndex];
+                return `${(it.code && it.code !== '-') ? '[' + it.code + '] ' : ''}${it.desc}`;
+              },
               label: function(context) {
                 const it = top10[context.dataIndex];
                 return [
                   `Impacto Preço: ${formatBRL(it.impacto_preco)}`,
-                  `Preço Médio 2025: ${formatBRL(it.preco_2025)}`,
-                  `Preço Médio 2026: ${formatBRL(it.preco_2026)} (+${it.var_preco_pct.toFixed(1)}%)`,
-                  `Qtd Consumida 2026: ${it.qtd_2026} unidades`
+                  `Subgrupo: ${it.group2 || 'Geral'}`,
+                  `Preço Unit. 2025: ${formatBRL(it.preco_2025)}`,
+                  `Preço Unit. 2026: ${formatBRL(it.preco_2026)} (+${it.var_preco_pct.toFixed(1)}%)`,
+                  `Qtd Consumida 2026: ${formatNumber(it.qtd_2026)} un`
                 ];
               }
             }
@@ -1376,15 +1385,20 @@ function renderTabelasItens() {
       const isHigher = it.var_preco_pct > 0;
       const color = isHigher ? 'var(--accent-red)' : 'var(--accent-green)';
       const sign = isHigher ? '+' : '';
+      const codeBadge = (it.code && it.code !== '-') 
+        ? `<span style="font-family: monospace; font-size: 11px; padding: 2px 6px; background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan); border-radius: 4px; font-weight: 700;">${it.code}</span>` 
+        : '<span style="color: var(--text-dim); font-size: 11px;">-</span>';
       return `
         <tr>
-          <td class="font-semibold" style="max-width: 320px;">${it.desc}</td>
+          <td>${codeBadge}</td>
+          <td class="font-semibold" style="max-width: 300px;">${it.desc}</td>
+          <td style="font-size: 11px; color: var(--text-muted);">${it.group2 || 'Geral'}</td>
           <td><span class="status-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan);">${it.family}</span></td>
           <td class="text-right">${formatBRL(it.preco_2025)}</td>
           <td class="text-right font-bold">${formatBRL(it.preco_2026)}</td>
           <td class="text-center font-bold" style="color: ${color};">${sign}${it.var_preco_pct.toFixed(1)}%</td>
-          <td class="text-right">${it.qtd_2025}</td>
-          <td class="text-right font-semibold">${it.qtd_2026}</td>
+          <td class="text-right">${formatNumber(it.qtd_2025)}</td>
+          <td class="text-right font-semibold">${formatNumber(it.qtd_2026)}</td>
           <td class="text-right font-bold" style="color: ${it.impacto_preco > 0 ? 'var(--accent-red)' : 'var(--accent-green)'}">
             ${formatBRL(it.impacto_preco)}
           </td>
@@ -1397,31 +1411,44 @@ function renderTabelasItens() {
   // 2. Novos Itens 2026
   const tbodyNovos = document.getElementById('tbody-novos-itens');
   if (tbodyNovos) {
-    tbodyNovos.innerHTML = data.novos_itens_top.map(it => `
-      <tr>
-        <td class="font-semibold" style="max-width: 360px;">${it.desc}</td>
-        <td><span class="status-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan);">${it.family}</span></td>
-        <td style="color: var(--text-muted); font-size: 12px;">${it.sup || 'Estoque Geral / Requisição'}</td>
-        <td class="text-right font-bold">${formatBRL(it.preco_medio)}</td>
-        <td class="text-center font-semibold">${it.count}</td>
-        <td class="text-right font-bold" style="color: var(--brand-cyan);">${formatBRL(it.total_val)}</td>
-      </tr>
-    `).join('');
+    tbodyNovos.innerHTML = data.novos_itens_top.map(it => {
+      const codeBadge = (it.code && it.code !== '-') 
+        ? `<span style="font-family: monospace; font-size: 11px; padding: 2px 6px; background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan); border-radius: 4px; font-weight: 700;">${it.code}</span>` 
+        : '<span style="color: var(--text-dim); font-size: 11px;">-</span>';
+      return `
+        <tr>
+          <td>${codeBadge}</td>
+          <td class="font-semibold" style="max-width: 320px;">${it.desc}</td>
+          <td style="font-size: 11px; color: var(--text-muted);">${it.group2 || 'Geral'}</td>
+          <td><span class="status-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan);">${it.family}</span></td>
+          <td style="color: var(--text-muted); font-size: 12px;">${it.sup || 'Estoque Geral / Requisição'}</td>
+          <td class="text-right font-bold">${formatBRL(it.preco_medio)}</td>
+          <td class="text-center font-semibold">${formatNumber(it.qty)}</td>
+          <td class="text-right font-bold" style="color: var(--brand-cyan);">${formatBRL(it.total_val)}</td>
+        </tr>
+      `;
+    }).join('');
   }
 
   // 3. Descontinuados
   const tbodyDesc = document.getElementById('tbody-descontinuados');
   if (tbodyDesc) {
-    tbodyDesc.innerHTML = data.itens_apenas_2025_top.map(it => `
-      <tr>
-        <td class="font-semibold" style="max-width: 360px;">${it.desc}</td>
-        <td><span class="status-badge" style="background: rgba(255, 255, 255, 0.08);">${it.family}</span></td>
-        <td style="color: var(--text-muted); font-size: 12px;">${it.sup || 'Estoque Geral / Requisição'}</td>
-        <td class="text-right font-bold">${formatBRL(it.preco_medio)}</td>
-        <td class="text-center font-semibold">${it.count}</td>
-        <td class="text-right font-semibold">${formatBRL(it.total_val)}</td>
-      </tr>
-    `).join('');
+    tbodyDesc.innerHTML = data.itens_apenas_2025_top.map(it => {
+      const codeBadge = (it.code && it.code !== '-') 
+        ? `<span style="font-family: monospace; font-size: 11px; padding: 2px 6px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; font-weight: 700;">${it.code}</span>` 
+        : '<span style="color: var(--text-dim); font-size: 11px;">-</span>';
+      return `
+        <tr>
+          <td>${codeBadge}</td>
+          <td class="font-semibold" style="max-width: 340px;">${it.desc}</td>
+          <td><span class="status-badge" style="background: rgba(255, 255, 255, 0.08);">${it.family}</span></td>
+          <td style="color: var(--text-muted); font-size: 12px;">${it.sup || 'Estoque Geral / Requisição'}</td>
+          <td class="text-right font-bold">${formatBRL(it.preco_medio)}</td>
+          <td class="text-center font-semibold">${formatNumber(it.qty)}</td>
+          <td class="text-right font-semibold">${formatBRL(it.total_val)}</td>
+        </tr>
+      `;
+    }).join('');
   }
 }
 
@@ -1508,18 +1535,34 @@ function renderTransacoesPage() {
   const endIdx = Math.min(startIdx + pageSize, total);
   const pageData = filteredTransactions.slice(startIdx, endIdx);
 
-  tbody.innerHTML = pageData.map(t => `
-    <tr>
-      <td class="font-semibold" style="white-space: nowrap;">${t.d}</td>
-      <td class="text-center font-bold"><span class="kpi-badge ${t.w >= 22 ? 'danger' : ''}">W${t.w}</span></td>
-      <td><span class="status-badge" style="background: rgba(56, 189, 248, 0.12); color: var(--brand-cyan);">${t.f}</span></td>
-      <td class="font-semibold">${t.i || '-'}</td>
-      <td style="max-width: 380px; font-size: 12px;">${t.m}</td>
-      <td style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">${t.s || '-'}</td>
-      <td class="text-right font-bold">${formatBRL(t.v)}</td>
-      <td style="font-size: 11px; color: var(--text-dim); max-width: 250px;">${t.h || '-'}</td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = pageData.map(t => {
+    const isService = t.t === 'Services';
+    const typeBadge = isService
+      ? '<span class="status-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">Serviço</span>'
+      : '<span class="status-badge" style="background: rgba(34, 197, 94, 0.15); color: #4ade80;">Material</span>';
+    
+    const codeBadge = (t.c && t.c !== '-')
+      ? `<span style="font-family: monospace; font-size: 11px; padding: 2px 6px; background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan); border-radius: 4px; font-weight: 700;">${t.c}</span>`
+      : '<span style="color: var(--text-dim); font-size: 11px;">-</span>';
+
+    return `
+      <tr>
+        <td class="font-semibold" style="white-space: nowrap;">${t.d}</td>
+        <td class="text-center font-bold"><span class="kpi-badge ${t.w >= 22 ? 'danger' : ''}">W${t.w}</span></td>
+        <td class="text-center">${typeBadge}</td>
+        <td>${codeBadge}</td>
+        <td><span class="status-badge" style="background: rgba(56, 189, 248, 0.12); color: var(--brand-cyan);">${t.f}</span></td>
+        <td class="font-semibold">${t.i || '-'}</td>
+        <td style="max-width: 320px; font-size: 12px;">${t.m}</td>
+        <td style="font-size: 11px; color: var(--text-muted);">${t.g || '-'}</td>
+        <td class="text-right font-bold">${formatNumber(t.q)}</td>
+        <td class="text-right" style="color: var(--text-muted); font-size: 12px;">${formatBRL(t.u)}</td>
+        <td class="text-right font-bold">${formatBRL(t.v)}</td>
+        <td style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">${t.s || '-'}</td>
+        <td style="font-size: 11px; color: var(--text-dim); max-width: 200px;">${t.h || '-'}</td>
+      </tr>
+    `;
+  }).join('');
 
   const pInfo = document.getElementById('pagination-info');
   if (pInfo) {
@@ -1548,6 +1591,10 @@ function handleTableSearch(term) {
   applyFilters();
 }
 
+function handleTypeFilter(val) {
+  applyFilters();
+}
+
 function handleFamilyFilter(val) {
   applyFilters();
 }
@@ -1561,20 +1608,24 @@ function applyFilters() {
   if (!data) return;
 
   const term = (document.getElementById('filtro-busca-tabela')?.value || '').toLowerCase().trim();
+  const typeFilter = document.getElementById('filtro-tipo-select')?.value || 'TODOS';
   const fam = document.getElementById('filtro-familia-select')?.value || 'TODAS';
   const period = document.getElementById('filtro-periodo-select')?.value || 'TODAS';
 
   filteredTransactions = data.transacoes.filter(t => {
+    if (typeFilter !== 'TODOS' && t.t !== typeFilter) return false;
     if (fam !== 'TODAS' && t.f !== fam) return false;
     if (period === 'PRE_WK22' && t.w > 21) return false;
     if (period === 'POS_WK22' && t.w < 22) return false;
 
     if (term) {
+      const matchC = (t.c || '').toLowerCase().includes(term);
       const matchM = (t.m || '').toLowerCase().includes(term);
+      const matchG = (t.g || '').toLowerCase().includes(term);
       const matchS = (t.s || '').toLowerCase().includes(term);
       const matchH = (t.h || '').toLowerCase().includes(term);
       const matchI = (t.i || '').toLowerCase().includes(term);
-      if (!matchM && !matchS && !matchH && !matchI) return false;
+      if (!matchC && !matchM && !matchG && !matchS && !matchH && !matchI) return false;
     }
 
     return true;
@@ -1596,7 +1647,7 @@ function sortTable(col) {
     let valA = a[col];
     let valB = b[col];
 
-    if (col === 'v' || col === 'w') {
+    if (col === 'v' || col === 'w' || col === 'q' || col === 'u') {
       valA = Number(valA) || 0;
       valB = Number(valB) || 0;
     } else {
@@ -1621,19 +1672,25 @@ function exportToExcel() {
   const exportData = filteredTransactions.map(t => ({
     'Data': t.d,
     'Semana': t.w,
+    'Tipo': t.t === 'Materials' ? 'Material' : 'Serviço',
+    'Código': t.c || '-',
     'Frota': t.f,
     'Conta': t.a,
     'Item/Máquina': t.i,
-    'Material/Serviço': t.m,
+    'Descrição Material/Serviço (SD3)': t.m,
+    'Subgrupo (Sistema)': t.g || '-',
+    'Quantidade': t.q,
+    'Preço Unitário (R$)': t.u,
+    'Valor Total (R$)': t.v,
     'Fornecedor': t.s,
-    'Valor (R$)': t.v,
     'Histórico': t.h
   }));
 
   const worksheet = XLSX.utils.json_to_sheet(exportData);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Custos_Manutencao_TCP');
-  XLSX.writeFile(workbook, `Custos_Manutencao_TCP_W44_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  const maxWk = (window.DASHBOARD_DATA && window.DASHBOARD_DATA.meta && window.DASHBOARD_DATA.meta.max_week) ? window.DASHBOARD_DATA.meta.max_week : 45;
+  XLSX.writeFile(workbook, `Custos_Manutencao_TCP_W${maxWk}_${new Date().toISOString().slice(0, 10)}.xlsx`);
 }
 
 // ==================== INITIALIZATION ====================

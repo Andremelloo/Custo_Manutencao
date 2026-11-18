@@ -617,13 +617,15 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>Descrição do Material / Peça</th>
+                <th style="min-width: 100px;">Código</th>
+                <th>Descrição do Material / Peça SD3</th>
+                <th>Subgrupo (Sistema)</th>
                 <th>Família</th>
-                <th class="text-right">Preço Médio 2025</th>
-                <th class="text-right">Preço Médio 2026</th>
+                <th class="text-right">Preço Unit. 2025</th>
+                <th class="text-right">Preço Unit. 2026</th>
                 <th class="text-center">Variação Preço (%)</th>
-                <th class="text-right">Consumo 2025</th>
-                <th class="text-right">Consumo 2026</th>
+                <th class="text-right">Qtd 2025</th>
+                <th class="text-right">Qtd 2026</th>
                 <th class="text-right">Impacto Preço (R$)</th>
                 <th class="text-right">Total Gasto 2026 (R$)</th>
               </tr>
@@ -639,11 +641,13 @@
           <table class="data-table">
             <thead>
               <tr>
+                <th style="min-width: 100px;">Código</th>
                 <th>Descrição do Material Novo em 2026</th>
+                <th>Subgrupo (Sistema)</th>
                 <th>Família</th>
                 <th>Fornecedor Principal</th>
-                <th class="text-right">Preço Médio Unitário</th>
-                <th class="text-center">Qtd Lançamentos</th>
+                <th class="text-right">Preço Unit. Médio</th>
+                <th class="text-center">Qtd Consumida</th>
                 <th class="text-right">Total Gasto em 2026 (R$)</th>
               </tr>
             </thead>
@@ -658,11 +662,12 @@
           <table class="data-table">
             <thead>
               <tr>
+                <th style="min-width: 100px;">Código</th>
                 <th>Descrição do Material Consumido apenas em 2025</th>
                 <th>Família</th>
                 <th>Fornecedor Principal</th>
-                <th class="text-right">Preço Médio 2025</th>
-                <th class="text-center">Qtd Lançamentos 2025</th>
+                <th class="text-right">Preço Unit. 2025</th>
+                <th class="text-center">Qtd Consumida 2025</th>
                 <th class="text-right">Total Gasto em 2025 (R$)</th>
               </tr>
             </thead>
@@ -699,10 +704,17 @@
         <div class="table-controls">
           <div class="search-input-wrapper">
             <span class="search-icon">🔍</span>
-            <input type="text" id="filtro-busca-tabela" class="search-input" placeholder="Buscar por peça, fornecedor, histórico, nota..." oninput="handleTableSearch(this.value)">
+            <input type="text" id="filtro-busca-tabela" class="search-input" placeholder="Buscar por código (ex: CT2185), descrição, peça, fornecedor, nota..." oninput="handleTableSearch(this.value)">
           </div>
 
           <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <label class="filter-label" for="filtro-tipo-select">Tipo:</label>
+            <select id="filtro-tipo-select" class="select-control" onchange="handleTypeFilter(this.value)">
+              <option value="TODOS">Todos (Peças & Serviços)</option>
+              <option value="Materials">📦 Materiais (Peças)</option>
+              <option value="Services">🛠️ Serviços</option>
+            </select>
+
             <label class="filter-label" for="filtro-familia-select">Frota:</label>
             <select id="filtro-familia-select" class="select-control" onchange="handleFamilyFilter(this.value)">
               <option value="TODAS">Todas as Frotas</option>
@@ -721,9 +733,9 @@
 
             <label class="filter-label" for="filtro-periodo-select">Período:</label>
             <select id="filtro-periodo-select" class="select-control" onchange="handlePeriodFilter(this.value)">
-              <option value="TODAS">Ano Completo (W01 a W44)</option>
+              <option value="TODAS">Ano Completo (W01 a W45)</option>
               <option value="PRE_WK22">Pré-Inflexão (W01 a W21)</option>
-              <option value="POS_WK22">Pós-Inflexão (W22 a W44)</option>
+              <option value="POS_WK22">Pós-Inflexão (W22 a W45)</option>
             </select>
 
             <button class="btn-action" onclick="exportToExcel()">
@@ -738,11 +750,16 @@
               <tr>
                 <th onclick="sortTable('d')">Data ↕</th>
                 <th onclick="sortTable('w')" class="text-center">Semana ↕</th>
+                <th onclick="sortTable('t')">Tipo ↕</th>
+                <th onclick="sortTable('c')">Código ↕</th>
                 <th onclick="sortTable('f')">Família ↕</th>
                 <th onclick="sortTable('i')">Máquina / Item ↕</th>
                 <th onclick="sortTable('m')">Descrição do Material / Serviço ↕</th>
+                <th onclick="sortTable('g')">Subgrupo (Sistema) ↕</th>
+                <th onclick="sortTable('q')" class="text-right">Qtd ↕</th>
+                <th onclick="sortTable('u')" class="text-right">Preço Unit. (R$) ↕</th>
+                <th onclick="sortTable('v')" class="text-right">Valor Total (R$) ↕</th>
                 <th onclick="sortTable('s')">Fornecedor ↕</th>
-                <th onclick="sortTable('v')" class="text-right">Valor (R$) ↕</th>
                 <th>Histórico / Pedido (PC)</th>
               </tr>
             </thead>

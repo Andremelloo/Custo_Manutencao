@@ -52,17 +52,18 @@ Para proteger as informações gerenciais e dados confidenciais de orçamento, o
    - Comparação da taxa de queima semanal (+84,4% de aceleração pós-Semana 22).
    - Principais vilões: descarte de ativos (Asset Disposal), ciclo concentrado de pneus Michelin e tandem de carretas, freios de gantry e esteiras Brevetti de RTGs, cabos Bridon de portêineres STS.
 
-4. **⚖️ Comparativo 2025 vs 2026**:
-   - Comparação item a item dos materiais e serviços.
-   - Diagnóstico de inflação unitária de preços nos mesmos itens.
-   - Identificação de itens novos em 2026 e itens descontinuados em relação a 2025.
+4. **⚖️ Comparativo 2025 vs 2026 Inteligente (com Código ERP e QTY Real)**:
+   - Comparação item a item de peças cruzando diretamente pelo **Código do Material (`Code`)** do SD3/SAP e com quantidade real consumida (`QTY`).
+   - Diagnóstico exato de inflação unitária de preços ($\text{Preço} = \text{Valor} / \text{QTY}$) sem distorções de lotes de faturamento.
+   - Identificação transparente de itens novos em 2026 e itens descontinuados em relação a 2025.
+   - Decomposição por subsistema técnico (`Group2`) com mais de 75 sistemas catalogados.
 
 5. **📋 Resumo Todas as Frotas (Deep-Dive Cards)**:
-   - Cards executivos detalhados para cada conta e família da manutenção.
+   - Cards executivos detalhados para cada conta e família da manutenção com navegação rápida em 1 clique.
 
-6. **🔍 Base Transacional & Exportação**:
-   - Mais de 25.000 lançamentos contábeis auditáveis com filtros por frota, semana, conta e busca em tempo real.
-   - Botão para exportação completa dos dados filtrados para Excel (`.xlsx`).
+6. **🔍 Base Transacional Auditável & Exportação**:
+   - Mais de 26.000 lançamentos contábeis auditáveis com filtros por frota, semana, tipo de despesa (Material vs Serviço) e busca instantânea por Código de Peça (ex: `CT2185...`), descrição, fornecedor ou histórico.
+   - Botão para exportação completa dos dados filtrados para Excel (`.xlsx`) com quantidades e preços unitários.
 
 ---
 
@@ -73,11 +74,14 @@ Custo_Manutencao/
 ├── index.html                   # Estrutura principal do Dashboard com tela de login
 ├── styles.css                   # Estilização moderna, responsiva e identidade visual TCP
 ├── app.js                       # Lógica de negócio, autenticação, filtros e renderizadores
-├── dashboard_data.js            # Base de dados analítica pré-processada (Curva S, frotas, transações)
+├── dashboard_data.js            # Base de dados analítica pré-processada (com Code, QTY e Subgrupos)
 ├── chart.umd.min.js             # Biblioteca Chart.js offline
 ├── xlsx.full.min.js             # Biblioteca SheetJS offline para exportação Excel
-├── generate_dashboard_data.py   # Script gerador da base analítica
+├── generate_dashboard_data.py   # Script gerador da base analítica a partir da pasta dados/
 ├── abrir_dashboard.bat          # Inicializador local em 1 clique
+├── restaurar_versao_anterior.bat # Script de restauração imediata para a versão anterior v1
+├── backup_v1/                   # Cópia integral de segurança dos arquivos da versão anterior
+├── dados/                       # Bases brutas atualizadas (2025 e 2026 com Code e QTY)
 ├── .nojekyll                    # Configuração para publicação sem restrições no GitHub Pages
 └── README.md                    # Documentação do projeto
 ```

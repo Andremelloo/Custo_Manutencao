@@ -1,4 +1,4 @@
-import openpyxl, csv, json, re
+import csv, json, re, os
 from datetime import datetime
 from collections import defaultdict
 
@@ -6,6 +6,13 @@ def parse_val(v):
     if not v: return 0.0
     v = str(v).replace('.', '').replace(',', '.')
     try: return float(v)
+    except: return 0.0
+
+def parse_qty(q):
+    if not q: return 0.0
+    q = str(q).strip().replace('.', '').replace(',', '.')
+    if q in ['#N/D', '#N/A', '-', '']: return 0.0
+    try: return float(q)
     except: return 0.0
 
 def clean_desc(d):
@@ -40,8 +47,8 @@ def format_machine_code(fam, code):
     if fam == 'TT' and len(c) == 3 and c.startswith('3'): return f'TT#{c[1:]}'
     return f'{fam} {c}'
 
-def categorize_item(fam, desc, gl_name):
-    d = (str(desc or '') + ' ' + str(gl_name or '')).lower()
+def categorize_item(fam, desc, gl_name, group2=''):
+    d = (str(desc or '') + ' ' + str(gl_name or '') + ' ' + str(group2 or '')).lower()
     if fam == 'RTG':
         if any(k in d for k in ['freio', 'brake', 'tr-11', 'sapata']): return 'Freios (Gantry/Trolley)'
         if any(k in d for k in ['gerador', 'alternador', 'generator']): return 'Geradores & Alternadores'
@@ -87,34 +94,61 @@ def categorize_item(fam, desc, gl_name):
         return 'Outros MHC'
     return 'Geral'
 
-print("1. Loading 2026 data from 2026.csv...")
+# 1. Carregar Dados de 2026
+file_2026 = 'dados/2026 com quantidade e codigo do material.csv'
+print(f"1. Carregando dados de 2026 a partir de '{file_2026}'...")
 records_2026 = []
-with open('2026.csv', 'r', encoding='latin1') as f:
+
+with open(file_2026, 'r', encoding='latin1') as f:
     r = csv.reader(f, delimiter=';')
-    for _ in range(4): next(r)
+    header = next(r)
+    # Indices detectados em 2026:
+    # 0: Data, 1: Group, 2: Account, 3: General Ledger Account, 4: Item, 5: Note, 6: History,
+    # 7: Value, 8: Supplier, 9: Descrição, 10: Classification in YTW, 11: ID SD3,
+    # 12: Semana SD3, 13: Mes SD3, 14: |Valor|, 15: QTY, 16: Code, 17: Description SD3,
+    # 18: Materal/service, 19: Group2, 20: Family
     for row in r:
-        if not row or len(row) < 9: continue
+        if not row or len(row) < 8: continue
         d_str = row[0].strip()
-        v = parse_val(row[8])
+        v = parse_val(row[7])
+        qty = parse_qty(row[15]) if len(row) > 15 else 0.0
+        code = row[16].strip() if len(row) > 16 else ''
+        if code in ['#N/D', '#N/A', '-']: code = ''
+        desc_sd3 = row[17].strip() if len(row) > 17 and row[17].strip() not in ['#N/D', ''] else ''
+        mat_serv = row[18].strip() if len(row) > 18 and row[18].strip() not in ['#N/D', ''] else ''
+        group2 = row[19].strip() if len(row) > 19 and row[19].strip() not in ['#N/D', ''] else ''
+        fam_detail = row[20].strip() if len(row) > 20 and row[20].strip() not in ['#N/D', ''] else ''
+        
+        # Semana SD3
+        wk = 0
+        if len(row) > 12 and row[12].strip().isdigit():
+            wk = int(row[12].strip())
+        else:
+            try:
+                dt = datetime.strptime(d_str, '%d/%m/%Y')
+                wk = dt.isocalendar()[1]
+            except:
+                wk = 0
+                
         try:
             dt = datetime.strptime(d_str, '%d/%m/%Y')
-            wk = dt.isocalendar()[1]
             iso_d = dt.strftime('%Y-%m-%d')
         except:
-            wk = 0
             iso_d = d_str
             
         grp = row[1].strip() if len(row) > 1 else ''
         acct = row[2].strip() if len(row) > 2 else ''
-        gl_id = row[3].strip() if len(row) > 3 else ''
-        gl_name = row[4].strip() if len(row) > 4 else ''
-        item = row[5].strip() if len(row) > 5 else ''
-        note = row[6].strip() if len(row) > 6 else ''
-        hist = row[7].strip() if len(row) > 7 else ''
-        sup = row[9].strip() if len(row) > 9 else ''
-        desc = row[10].strip() if len(row) > 10 else ''
+        gl_name = row[3].strip() if len(row) > 3 else ''
+        mach_item = row[4].strip() if len(row) > 4 else ''
+        note = row[5].strip() if len(row) > 5 else ''
+        hist = row[6].strip() if len(row) > 6 else ''
+        sup = row[8].strip() if len(row) > 8 else ''
+        desc_raw = row[9].strip() if len(row) > 9 else ''
+        
         fam = get_family(acct)
-        is_service = 'service' in acct.lower() or 'sm ' in gl_name.lower() or 'serviço' in desc.lower()
+        is_service = (mat_serv.lower() == 'services') or ('service' in acct.lower()) or ('serviço' in desc_raw.lower())
+        
+        display_desc = desc_sd3 if desc_sd3 else (desc_raw if desc_raw else gl_name)
         
         records_2026.append({
             'date': iso_d,
@@ -123,48 +157,91 @@ with open('2026.csv', 'r', encoding='latin1') as f:
             'account': acct,
             'family': fam,
             'gl_name': gl_name,
-            'item': item,
+            'item': mach_item,
             'note': note,
             'hist': hist,
             'value': v,
+            'qty': qty,
+            'code': code,
+            'desc_sd3': desc_sd3,
+            'mat_serv': mat_serv,
+            'group2': group2,
+            'fam_detail': fam_detail,
             'sup': sup,
-            'desc': desc,
+            'desc': display_desc,
             'is_service': is_service
         })
 
-print(f"Loaded {len(records_2026)} records for 2026.")
+print(f"Carregados {len(records_2026)} registros para 2026.")
 
-print("2. Loading 2025 data from 2025.xlsx...")
-wb = openpyxl.load_workbook('2025.xlsx', data_only=True)
-ws = wb.active
+# 2. Carregar Dados de 2025
+file_2025 = 'dados/2025 com quantidade e codigo do material.csv'
+print(f"2. Carregando dados de 2025 a partir de '{file_2025}'...")
 records_2025 = []
-for r in range(4, ws.max_row + 1):
-    d = ws.cell(r, 1).value
-    acct = str(ws.cell(r, 4).value or '').strip()
-    val = ws.cell(r, 13).value
-    sup = str(ws.cell(r, 14).value or '').strip()
-    desc = str(ws.cell(r, 15).value or '').strip()
-    item = str(ws.cell(r, 10).value or '').strip()
-    
-    if val is not None:
-        try: vf = float(val)
-        except: continue
-        dt_str = d.strftime('%Y-%m-%d') if hasattr(d, 'strftime') else str(d)[:10]
-        wk = d.isocalendar()[1] if hasattr(d, 'isocalendar') else 0
+
+with open(file_2025, 'r', encoding='latin1') as f:
+    r = csv.reader(f, delimiter=';')
+    header = next(r)
+    # Indices detectados em 2025:
+    # 0: Data, 1: Group, 2: Account, 3: General Ledger Account, 4: Item, 5: Note, 6: History,
+    # 7: Description, 8: Value, 9: Supplier, 10: Classification in YTW, 11: Semana SD3,
+    # 12: Mes SD3, 13: |Valor|, 14: Code, 15: Description SD3, 16: Material/service, 17: Family, 18: QTY
+    for row in r:
+        if not row or len(row) < 9: continue
+        d_str = row[0].strip()
+        v = parse_val(row[8])
+        qty = parse_qty(row[18]) if len(row) > 18 else 0.0
+        code = row[14].strip() if len(row) > 14 else ''
+        if code in ['#N/D', '#N/A', '-']: code = ''
+        desc_sd3 = row[15].strip() if len(row) > 15 and row[15].strip() not in ['#N/D', ''] else ''
+        mat_serv = row[16].strip() if len(row) > 16 and row[16].strip() not in ['#N/D', ''] else ''
+        fam_detail = row[17].strip() if len(row) > 17 and row[17].strip() not in ['#N/D', ''] else ''
+        
+        wk = 0
+        if len(row) > 11 and row[11].strip().isdigit():
+            wk = int(row[11].strip())
+        else:
+            try:
+                dt = datetime.strptime(d_str, '%d/%m/%Y')
+                wk = dt.isocalendar()[1]
+            except:
+                wk = 0
+                
+        try:
+            dt = datetime.strptime(d_str, '%d/%m/%Y')
+            iso_d = dt.strftime('%Y-%m-%d')
+        except:
+            iso_d = d_str
+            
+        grp = row[1].strip() if len(row) > 1 else ''
+        acct = row[2].strip() if len(row) > 2 else ''
+        gl_name = row[3].strip() if len(row) > 3 else ''
+        mach_item = row[4].strip() if len(row) > 4 else ''
+        desc_raw = row[7].strip() if len(row) > 7 else ''
+        sup = row[9].strip() if len(row) > 9 else ''
+        
+        display_desc = desc_sd3 if desc_sd3 else (desc_raw if desc_raw else gl_name)
+        
         records_2025.append({
-            'date': dt_str,
+            'date': iso_d,
             'week': wk,
+            'group': grp,
             'account': acct,
             'family': get_family(acct),
-            'item': item,
-            'value': vf,
+            'item': mach_item,
+            'value': v,
+            'qty': qty,
+            'code': code,
+            'desc_sd3': desc_sd3,
+            'mat_serv': mat_serv,
+            'fam_detail': fam_detail,
             'sup': sup,
-            'desc': desc
+            'desc': display_desc
         })
 
-print(f"Loaded {len(records_2025)} records for 2025.")
+print(f"Carregados {len(records_2025)} registros para 2025.")
 
-# 3. Official Slide / Budget Data for WK 44
+# 3. Metas Oficiais de Orçamento e Diagnóstico Executivo para WK 44
 familias_oficiais = [
     {
         'account': 'STS',
@@ -267,7 +344,7 @@ familias_oficiais = [
     }
 ]
 
-# 4. Weekly S-Curve Data from PowerPoint chart39.xml
+# 4. Dados Oficiais da Curva S (PowerPoint WK 44)
 curva_s_semanas = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44]
 curva_s_forecast = [
     0, 1398923.08, 2797846.15, 4196769.23, 5595692.31, 6994615.38, 8393538.46, 9792461.54,
@@ -296,7 +373,7 @@ for i in range(len(curva_s_semanas)):
         'is_wk22_point': (wk >= 22)
     })
 
-# 5. WK 22 Deep-Dive Analytics
+# 5. Análise de Inflexão na WK 22 por Família
 pre_w22_fam = defaultdict(float)
 post_w22_fam = defaultdict(float)
 for x in records_2026:
@@ -322,13 +399,9 @@ for f in familias_nomes:
         'post_media_sem': post_media,
         'aumento_pct': crescimento
     })
-
 wk22_comparativo_familias.sort(key=lambda t: t['post_total'], reverse=True)
 
-# =========================================================================
-# 6. WEEK-BY-WEEK INTELLIGENCE FOR ALL 6 MAIN FLEETS (W01-W44)
-# (RTG, TT, STS, RS, EH, MHC)
-# =========================================================================
+# 6. Inteligência Semanal por Frota (W01 a W45)
 fleet_list = ['TT', 'STS', 'RS', 'EH', 'MHC', 'RTG']
 fleet_meta_info = {
     'TT': {
@@ -387,12 +460,14 @@ fleet_meta_info = {
     }
 }
 
+max_wk_2026 = max(x['week'] for x in records_2026 if x['week'] > 0)
+print(f"Semanas ativas detectadas em 2026: 1 a {max_wk_2026}")
+
 frotas_analytics = {}
 
 for f in fleet_list:
-    # 1. Initialize 44 weeks
     semanas = {}
-    for w in range(1, 45):
+    for w in range(1, max_wk_2026 + 1):
         semanas[w] = {
             'week': w,
             'total': 0.0,
@@ -404,18 +479,19 @@ for f in fleet_list:
         }
     
     maquinas = defaultdict(lambda: {'pre': 0.0, 'post': 0.0, 'total': 0.0, 'top_item': '', 'top_val': 0.0})
-    mach_items_pre = defaultdict(lambda: defaultdict(lambda: [0, 0.0]))
-    mach_items_post = defaultdict(lambda: defaultdict(lambda: [0, 0.0]))
+    mach_items_pre = defaultdict(lambda: defaultdict(lambda: [0.0, 0.0])) # [qty, val]
+    mach_items_post = defaultdict(lambda: defaultdict(lambda: [0.0, 0.0]))
     cat_pre = defaultdict(float)
     cat_post = defaultdict(float)
     cat_tot = defaultdict(float)
 
     for x in records_2026:
-        if x['family'] != f or x['week'] < 1 or x['week'] > 44: continue
+        if x['family'] != f or x['week'] < 1 or x['week'] > max_wk_2026: continue
         w = x['week']
         v = x['value']
+        q = x['qty'] if x['qty'] > 0 else 1.0
         desc = clean_desc(x['desc'] or x['gl_name'])
-        cat = categorize_item(f, x['desc'], x['gl_name'])
+        cat = categorize_item(f, x['desc'], x['gl_name'], x['group2'])
         mach_name = format_machine_code(f, x['item'])
         
         semanas[w]['total'] += v
@@ -430,13 +506,13 @@ for f in fleet_list:
             maquinas[mach_name]['pre'] += v
             cat_pre[cat] += v
             if desc and v > 0:
-                mach_items_pre[mach_name][desc][0] += 1
+                mach_items_pre[mach_name][desc][0] += q
                 mach_items_pre[mach_name][desc][1] += v
         else:
             maquinas[mach_name]['post'] += v
             cat_post[cat] += v
             if desc and v > 0:
-                mach_items_post[mach_name][desc][0] += 1
+                mach_items_post[mach_name][desc][0] += q
                 mach_items_post[mach_name][desc][1] += v
         cat_tot[cat] += v
         
@@ -444,49 +520,46 @@ for f in fleet_list:
             maquinas[mach_name]['top_val'] = v
             maquinas[mach_name]['top_item'] = desc
 
-    # Convert semanas to list and prepare category dicts
     semanas_list = []
-    for w in range(1, 45):
+    for w in range(1, max_wk_2026 + 1):
         item_w = semanas[w]
-        item_w['categorias'] = dict(item_w['categorias'])
-        semanas_list.append(item_w)
+        semanas_list.append({
+            'week': w,
+            'total': item_w['total'],
+            'is_pos_wk22': item_w['is_pos_wk22'],
+            'top_item': item_w['top_item'],
+            'top_val': item_w['top_val'],
+            'top_mach': item_w['top_mach'],
+            'categorias': dict(item_w['categorias'])
+        })
 
-    # Categories comparative
+    all_cats = list(cat_tot.keys())
     cat_comp = []
-    for c, tot in cat_tot.items():
-        pre_v = cat_pre[c]
-        post_v = cat_post[c]
-        pre_m = pre_v / 21
-        post_m = post_v / 23
-        aum = ((post_m / pre_m - 1) * 100) if pre_m > 0 else 100.0
+    for c in all_cats:
         cat_comp.append({
             'categoria': c,
-            'pre_total': pre_v,
-            'post_total': post_v,
-            'total': tot,
-            'pre_media_sem': pre_m,
-            'post_media_sem': post_m,
-            'aumento_pct': aum
+            'pre': cat_pre[c],
+            'post': cat_post[c],
+            'total': cat_tot[c],
+            'share': (cat_tot[c] / sum(cat_tot.values()) * 100) if sum(cat_tot.values()) > 0 else 0
         })
     cat_comp.sort(key=lambda t: t['total'], reverse=True)
 
-    # Machines ranking with Top 3 items pre and post WK22
     mach_ranking = []
     for m, d in maquinas.items():
-        if m.startswith('Frota Geral') and d['total'] < 1000: continue
+        pre_items = sorted(mach_items_pre[m].items(), key=lambda t: t[1][1], reverse=True)[:3]
+        post_items = sorted(mach_items_post[m].items(), key=lambda t: t[1][1], reverse=True)[:3]
         
-        top_pre_list = sorted(mach_items_pre[m].items(), key=lambda t: t[1][1], reverse=True)[:3]
-        top_pre = [{'nome': k, 'qtd': v[0], 'val': v[1]} for k, v in top_pre_list if v[1] > 0]
+        top_pre = [{'desc': k, 'count': int(round(v[0])), 'val': v[1]} for k, v in pre_items]
+        top_post = [{'desc': k, 'count': int(round(v[0])), 'val': v[1]} for k, v in post_items]
         
-        top_post_list = sorted(mach_items_post[m].items(), key=lambda t: t[1][1], reverse=True)[:3]
-        top_post = [{'nome': k, 'qtd': v[0], 'val': v[1]} for k, v in top_post_list if v[1] > 0]
-
         mach_ranking.append({
             'maquina': m,
-            'pre_total': d['pre'],
-            'post_total': d['post'],
+            'pre': d['pre'],
+            'post': d['post'],
             'total': d['total'],
             'top_item': d['top_item'],
+            'top_val': d['top_val'],
             'top_pre': top_pre,
             'top_post': top_post
         })
@@ -494,6 +567,7 @@ for f in fleet_list:
 
     pre_tot_f = sum(s['total'] for s in semanas_list if s['week'] < 22)
     post_tot_f = sum(s['total'] for s in semanas_list if s['week'] >= 22)
+    num_post_weeks = max_wk_2026 - 21
 
     frotas_analytics[f] = {
         'info': fleet_meta_info[f],
@@ -502,32 +576,44 @@ for f in fleet_list:
         'maquinas_ranking': mach_ranking[:25],
         'pre_total': pre_tot_f,
         'post_total': post_tot_f,
-        'pre_media_sem': pre_tot_f / 21,
-        'post_media_sem': post_tot_f / 23,
-        'aumento_pct': (((post_tot_f / 23) / (pre_tot_f / 21) - 1) * 100) if pre_tot_f > 0 else 100.0
+        'pre_media_sem': pre_tot_f / 21 if pre_tot_f > 0 else 0,
+        'post_media_sem': post_tot_f / num_post_weeks if post_tot_f > 0 else 0,
+        'aumento_pct': (((post_tot_f / num_post_weeks) / (pre_tot_f / 21) - 1) * 100) if pre_tot_f > 0 else 100.0
     }
 
-print("Generated weekly analytics for all 6 main fleets!")
+print("Inteligência semanal de frotas calculada com sucesso!")
 
-# 7. Item Comparative Analysis 2025 vs 2026
-items_2025 = defaultdict(lambda: {'count': 0, 'total_val': 0.0, 'family': 'Others', 'sup': set()})
+# 7. Comparativo 2025 vs 2026 Inteligente (Usando Code e QTY Real)
+items_2025 = defaultdict(lambda: {'val': 0.0, 'qty': 0.0, 'count': 0, 'code': '', 'desc': '', 'family': '', 'sup': set()})
 for x in records_2025:
-    d = clean_desc(x['desc'])
-    if d:
-        items_2025[d]['count'] += 1
-        items_2025[d]['total_val'] += x['value']
-        items_2025[d]['family'] = x['family']
-        if x['sup']: items_2025[d]['sup'].add(x['sup'])
+    code = x['code']
+    desc = clean_desc(x['desc'])
+    key = ('CODE:' + code) if code else ('DESC:' + desc)
+    if not key or key in ['CODE:', 'DESC:']: continue
+    
+    items_2025[key]['val'] += x['value']
+    items_2025[key]['qty'] += x['qty']
+    items_2025[key]['count'] += 1
+    if code: items_2025[key]['code'] = code
+    if desc and not items_2025[key]['desc']: items_2025[key]['desc'] = desc
+    if x['family'] and not items_2025[key]['family']: items_2025[key]['family'] = x['family']
+    if x['sup']: items_2025[key]['sup'].add(x['sup'])
 
-items_2026 = defaultdict(lambda: {'count': 0, 'total_val': 0.0, 'family': 'Others', 'sup': set(), 'code': ''})
+items_2026 = defaultdict(lambda: {'val': 0.0, 'qty': 0.0, 'count': 0, 'code': '', 'desc': '', 'family': '', 'group2': '', 'sup': set()})
 for x in records_2026:
-    d = clean_desc(x['desc'])
-    if d:
-        items_2026[d]['count'] += 1
-        items_2026[d]['total_val'] += x['value']
-        items_2026[d]['family'] = x['family']
-        if x['item']: items_2026[d]['code'] = x['item']
-        if x['sup']: items_2026[d]['sup'].add(x['sup'])
+    code = x['code']
+    desc = clean_desc(x['desc'])
+    key = ('CODE:' + code) if code else ('DESC:' + desc)
+    if not key or key in ['CODE:', 'DESC:']: continue
+    
+    items_2026[key]['val'] += x['value']
+    items_2026[key]['qty'] += x['qty']
+    items_2026[key]['count'] += 1
+    if code: items_2026[key]['code'] = code
+    if desc and not items_2026[key]['desc']: items_2026[key]['desc'] = desc
+    if x['family'] and not items_2026[key]['family']: items_2026[key]['family'] = x['family']
+    if x['group2'] and not items_2026[key]['group2']: items_2026[key]['group2'] = x['group2']
+    if x['sup']: items_2026[key]['sup'].add(x['sup'])
 
 common_keys = set(items_2025.keys()) & set(items_2026.keys())
 only_2026_keys = set(items_2026.keys()) - set(items_2025.keys())
@@ -537,25 +623,36 @@ itens_inflacao = []
 for k in common_keys:
     d25 = items_2025[k]
     d26 = items_2026[k]
-    p25 = d25['total_val'] / d25['count'] if d25['count'] else 0
-    p26 = d26['total_val'] / d26['count'] if d26['count'] else 0
+    
+    q25 = d25['qty'] if d25['qty'] > 0 else float(d25['count'])
+    q26 = d26['qty'] if d26['qty'] > 0 else float(d26['count'])
+    
+    p25 = d25['val'] / q25 if q25 > 0 else 0.0
+    p26 = d26['val'] / q26 if q26 > 0 else 0.0
+    
     diff_p = p26 - p25
-    diff_pct = (diff_p / p25 * 100) if p25 > 0 else 0
-    impact_p = diff_p * d26['count']
-    impact_v = (d26['count'] - d25['count']) * p25
+    diff_pct = (diff_p / p25 * 100) if p25 > 0 else 0.0
+    impact_p = diff_p * q26
+    impact_v = (q26 - q25) * p25
+    
+    display_code = d26['code'] or d25['code'] or '-'
+    display_desc = d26['desc'] or d25['desc']
+    
     itens_inflacao.append({
-        'desc': k,
-        'family': d26['family'],
+        'code': display_code,
+        'desc': display_desc,
+        'family': d26['family'] or d25['family'],
+        'group2': d26['group2'] or 'Geral',
         'sup': ", ".join(list(d26['sup'])[:2]),
         'preco_2025': p25,
         'preco_2026': p26,
         'var_preco_pct': diff_pct,
-        'qtd_2025': d25['count'],
-        'qtd_2026': d26['count'],
-        'var_qtd': d26['count'] - d25['count'],
+        'qtd_2025': round(q25, 2),
+        'qtd_2026': round(q26, 2),
+        'var_qtd': round(q26 - q25, 2),
         'impacto_preco': impact_p,
         'impacto_volume': impact_v,
-        'total_2026': d26['total_val']
+        'total_2026': d26['val']
     })
 
 itens_inflacao.sort(key=lambda t: t['impacto_preco'], reverse=True)
@@ -563,81 +660,94 @@ itens_inflacao.sort(key=lambda t: t['impacto_preco'], reverse=True)
 novos_itens_2026 = []
 for k in only_2026_keys:
     d = items_2026[k]
+    q = d['qty'] if d['qty'] > 0 else float(d['count'])
     novos_itens_2026.append({
-        'desc': k,
+        'code': d['code'] or '-',
+        'desc': d['desc'],
         'family': d['family'],
+        'group2': d['group2'] or 'Geral',
         'sup': ", ".join(list(d['sup'])[:2]),
-        'total_val': d['total_val'],
+        'total_val': d['val'],
         'count': d['count'],
-        'preco_medio': d['total_val'] / d['count'] if d['count'] else 0
+        'qty': round(q, 2),
+        'preco_medio': d['val'] / q if q > 0 else 0.0
     })
 novos_itens_2026.sort(key=lambda t: t['total_val'], reverse=True)
 
 itens_apenas_2025 = []
 for k in only_2025_keys:
     d = items_2025[k]
+    q = d['qty'] if d['qty'] > 0 else float(d['count'])
     itens_apenas_2025.append({
-        'desc': k,
+        'code': d['code'] or '-',
+        'desc': d['desc'],
         'family': d['family'],
         'sup': ", ".join(list(d['sup'])[:2]),
-        'total_val': d['total_val'],
+        'total_val': d['val'],
         'count': d['count'],
-        'preco_medio': d['total_val'] / d['count'] if d['count'] else 0
+        'qty': round(q, 2),
+        'preco_medio': d['val'] / q if q > 0 else 0.0
     })
 itens_apenas_2025.sort(key=lambda t: t['total_val'], reverse=True)
 
-# 8. Compact transactions for client-side search & table
+# 8. Transações Compactas para Visualização e Tabela Dinâmica
 transacoes_compactas = []
 for x in records_2026:
     if x['family'] == 'Personnel/Other': continue
-    if x['week'] <= 44:
-        transacoes_compactas.append({
-            'd': x['date'],
-            'w': x['week'],
-            'f': x['family'],
-            'a': x['account'],
-            'i': x['item'],
-            's': x['sup'],
-            'v': round(x['value'], 2),
-            'm': x['desc'] or x['gl_name'],
-            'h': x['hist'][:120] if x['hist'] else ''
-        })
+    u_price = round(x['value'] / x['qty'], 2) if x['qty'] > 0 else round(x['value'], 2)
+    transacoes_compactas.append({
+        'd': x['date'],
+        'w': x['week'],
+        'f': x['family'],
+        'a': x['account'],
+        'i': x['item'],
+        's': x['sup'],
+        'v': round(x['value'], 2),
+        'q': round(x['qty'], 2) if x['qty'] != 0 else 1,
+        'c': x['code'] if x['code'] else '-',
+        'u': u_price,
+        'g': x['group2'] if x['group2'] else '-',
+        't': 'Materials' if not x['is_service'] else 'Services',
+        'm': x['desc'],
+        'h': x['hist'][:120] if x['hist'] else ''
+    })
 
-print(f"Generated {len(transacoes_compactas)} compact transactions.")
+print(f"Geradas {len(transacoes_compactas)} transações compactas.")
 
+# 9. Montar Pacote Consolidado DASHBOARD_DATA
 dashboard_bundle = {
     'meta': {
         'titulo': 'Dashboard de Custos de Manutenção & Frotas - TCP',
-        'subtitulo': 'Terminal de Contêineres de Paranaguá :: Gestão Orçamentária 2025 vs 2026 :: Week 44',
+        'subtitulo': f'Terminal de Contêineres de Paranaguá :: Gestão Orçamentária 2025 vs 2026 :: Week {max_wk_2026}',
         'budget_total': 30776307.69,
         'real_total': 40533493.23,
         'balance_total': -9757185.54,
         'balance_total_pct': -31.70,
         'media_semanal': 908825.42,
         'forecast_anual': 47258921.68,
+        'max_week': max_wk_2026,
         'total_itens_comuns': len(common_keys),
         'total_novos_itens_2026': len(only_2026_keys),
         'gasto_novos_itens_2026': sum(x['total_val'] for x in novos_itens_2026),
         'total_itens_apenas_2025': len(only_2025_keys),
         'gasto_apenas_2025': sum(x['total_val'] for x in itens_apenas_2025),
-        'data_atualizacao': 'Novembro 2026'
+        'data_atualizacao': 'Novembro 2026 (Base Oficial com Code e QTY)'
     },
     'curva_s': curva_s,
     'familias': familias_oficiais,
     'wk22_comparativo': wk22_comparativo_familias,
     'frotas_analytics': frotas_analytics,
-    # Keep rtg_analytics for backward compatibility
     'rtg_analytics': frotas_analytics['RTG'],
-    'itens_inflacao_top': itens_inflacao[:100],
-    'novos_itens_top': novos_itens_2026[:100],
-    'itens_apenas_2025_top': itens_apenas_2025[:100],
+    'itens_inflacao_top': itens_inflacao[:120],
+    'novos_itens_top': novos_itens_2026[:120],
+    'itens_apenas_2025_top': itens_apenas_2025[:120],
     'transacoes': transacoes_compactas
 }
 
 with open('dashboard_data.js', 'w', encoding='utf-8') as f:
-    f.write("// TCP Maintenance Cost Intelligence Data Bundle\n")
+    f.write("// TCP Maintenance Cost Intelligence Data Bundle (Atualizado com Code & QTY)\n")
     f.write("window.DASHBOARD_DATA = ")
     json.dump(dashboard_bundle, f, ensure_ascii=False)
     f.write(";\n")
 
-print("Generated dashboard_data.js with all fleets analytics successfully!")
+print("Sucesso! 'dashboard_data.js' gerado com sucesso a partir das bases novas de 2025 e 2026!")
