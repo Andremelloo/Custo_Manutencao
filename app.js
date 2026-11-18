@@ -969,17 +969,21 @@ function renderFleetKPIs(fleetData) {
 
   // Top component cards
   topCats.forEach(c => {
-    const isCatSpike = c.aumento_pct > 30;
+    const aumento = (c.aumento_pct !== undefined && !isNaN(c.aumento_pct)) ? c.aumento_pct : 0;
+    const isCatSpike = aumento > 30;
+    const preVal = c.pre_total !== undefined ? c.pre_total : (c.pre || 0);
+    const postVal = c.post_total !== undefined ? c.post_total : (c.post || 0);
+
     cardsHtml += `
       <div class="glass-panel kpi-card ${isCatSpike ? 'negative' : 'warning'}">
         <div class="kpi-header">
-          <span class="kpi-title">${c.categoria.substring(0, 24)}</span>
+          <span class="kpi-title">${(c.categoria || '').substring(0, 24)}</span>
           <span class="kpi-icon">⚙️</span>
         </div>
         <div class="kpi-value" style="font-size: 22px;">${formatBRL(c.total)}</div>
         <div class="kpi-sub">
-          <span>Pré: ${formatBRL(c.pre_total)}</span> &bull; 
-          <strong style="color: ${isCatSpike ? 'var(--accent-red)' : 'var(--accent-green)'}">Pós: ${formatBRL(c.post_total)} (+${c.aumento_pct.toFixed(0)}%)</strong>
+          <span>Pré: ${formatBRL(preVal)}</span> &bull; 
+          <strong style="color: ${isCatSpike ? 'var(--accent-red)' : 'var(--accent-green)'}">Pós: ${formatBRL(postVal)} (+${aumento.toFixed(0)}%)</strong>
         </div>
       </div>
     `;
@@ -1208,18 +1212,23 @@ function formatTopItemsList(items, isPost) {
 
   return `
     <div style="display: flex; flex-direction: column; gap: 6px;">
-      ${items.map(it => `
+      ${items.map(it => {
+        const qtdVal = it.qtd !== undefined ? it.qtd : (it.count !== undefined ? it.count : 1);
+        const nomeVal = it.nome || it.desc || 'Item';
+        const valorItem = it.val !== undefined ? it.val : 0;
+        return `
         <div style="font-size: 12px; line-height: 1.35; display: flex; align-items: flex-start; gap: 6px;">
           <span style="font-size: 10px; margin-top: 2px;">${icon}</span>
           <div>
-            <strong style="color: ${badgeColor}; font-weight: 700;">${it.qtd} un</strong>
-            <span style="color: var(--text-main); font-weight: 500;"> • ${it.nome}</span>
+            <strong style="color: ${badgeColor}; font-weight: 700;">${qtdVal} un</strong>
+            <span style="color: var(--text-main); font-weight: 500;"> • ${nomeVal}</span>
             <span style="display: block; font-size: 11px; color: var(--text-muted); font-weight: 600;">
-              Total: ${formatBRL(it.val)}
+              Total: ${formatBRL(valorItem)}
             </span>
           </div>
         </div>
-      `).join('')}
+        `;
+      }).join('')}
     </div>
   `;
 }
@@ -1235,7 +1244,10 @@ function renderFleetMachinesTable(fleetData) {
 
   tbody.innerHTML = fleetData.maquinas_ranking.map((m, idx) => {
     const isTop3Mach = idx < 3;
-    const isSpike = m.post_total > m.pre_total * 1.5 && m.post_total > 50000;
+    const preTot = m.pre_total !== undefined ? m.pre_total : (m.pre !== undefined ? m.pre : 0);
+    const postTot = m.post_total !== undefined ? m.post_total : (m.post !== undefined ? m.post : 0);
+    const totalTot = m.total !== undefined ? m.total : (preTot + postTot);
+    const isSpike = postTot > preTot * 1.5 && postTot > 50000;
 
     return `
       <tr style="${isSpike ? 'background: rgba(239, 68, 68, 0.04);' : ''}">
@@ -1245,19 +1257,19 @@ function renderFleetMachinesTable(fleetData) {
           ${isSpike ? '<span class="kpi-badge" style="display: inline-block; margin-top: 4px; background: rgba(239, 68, 68, 0.2); color: var(--accent-red); font-size: 10px;">SALTO PÓS-WK22</span>' : ''}
         </td>
         <td class="text-right" style="vertical-align: top; font-weight: 700; color: var(--brand-cyan);">
-          ${formatBRL(m.pre_total)}
+          ${formatBRL(preTot)}
         </td>
         <td style="vertical-align: top; max-width: 320px; background: rgba(56, 189, 248, 0.02);">
           ${formatTopItemsList(m.top_pre, false)}
         </td>
         <td class="text-right" style="vertical-align: top; font-weight: 700; color: var(--accent-red);">
-          ${formatBRL(m.post_total)}
+          ${formatBRL(postTot)}
         </td>
         <td style="vertical-align: top; max-width: 320px; background: rgba(239, 68, 68, 0.02);">
           ${formatTopItemsList(m.top_post, true)}
         </td>
         <td class="text-right font-bold" style="vertical-align: top; font-size: 14px; color: var(--text-main);">
-          ${formatBRL(m.total)}
+          ${formatBRL(totalTot)}
         </td>
       </tr>
     `;

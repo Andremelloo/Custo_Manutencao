@@ -533,15 +533,27 @@ for f in fleet_list:
             'categorias': dict(item_w['categorias'])
         })
 
+    pre_tot_f = sum(s['total'] for s in semanas_list if s['week'] < 22)
+    post_tot_f = sum(s['total'] for s in semanas_list if s['week'] >= 22)
+    num_post_weeks = max_wk_2026 - 21
+
     all_cats = list(cat_tot.keys())
     cat_comp = []
     for c in all_cats:
+        pre_c = cat_pre[c]
+        post_c = cat_post[c]
+        pre_m = pre_c / 21 if pre_c > 0 else 0
+        post_m = post_c / num_post_weeks if post_c > 0 else 0
+        aum_pct = (((post_m / pre_m) - 1) * 100) if pre_m > 0 else (100.0 if post_c > 0 else 0.0)
         cat_comp.append({
             'categoria': c,
-            'pre': cat_pre[c],
-            'post': cat_post[c],
+            'pre': pre_c,
+            'post': post_c,
+            'pre_total': pre_c,
+            'post_total': post_c,
             'total': cat_tot[c],
-            'share': (cat_tot[c] / sum(cat_tot.values()) * 100) if sum(cat_tot.values()) > 0 else 0
+            'share': (cat_tot[c] / sum(cat_tot.values()) * 100) if sum(cat_tot.values()) > 0 else 0,
+            'aumento_pct': round(aum_pct, 1)
         })
     cat_comp.sort(key=lambda t: t['total'], reverse=True)
 
@@ -550,13 +562,15 @@ for f in fleet_list:
         pre_items = sorted(mach_items_pre[m].items(), key=lambda t: t[1][1], reverse=True)[:3]
         post_items = sorted(mach_items_post[m].items(), key=lambda t: t[1][1], reverse=True)[:3]
         
-        top_pre = [{'desc': k, 'count': int(round(v[0])), 'val': v[1]} for k, v in pre_items]
-        top_post = [{'desc': k, 'count': int(round(v[0])), 'val': v[1]} for k, v in post_items]
+        top_pre = [{'nome': k, 'desc': k, 'qtd': int(round(v[0])) if v[0] > 0 else 1, 'count': int(round(v[0])), 'val': v[1]} for k, v in pre_items]
+        top_post = [{'nome': k, 'desc': k, 'qtd': int(round(v[0])) if v[0] > 0 else 1, 'count': int(round(v[0])), 'val': v[1]} for k, v in post_items]
         
         mach_ranking.append({
             'maquina': m,
             'pre': d['pre'],
             'post': d['post'],
+            'pre_total': d['pre'],
+            'post_total': d['post'],
             'total': d['total'],
             'top_item': d['top_item'],
             'top_val': d['top_val'],
@@ -564,10 +578,6 @@ for f in fleet_list:
             'top_post': top_post
         })
     mach_ranking.sort(key=lambda t: t['total'], reverse=True)
-
-    pre_tot_f = sum(s['total'] for s in semanas_list if s['week'] < 22)
-    post_tot_f = sum(s['total'] for s in semanas_list if s['week'] >= 22)
-    num_post_weeks = max_wk_2026 - 21
 
     frotas_analytics[f] = {
         'info': fleet_meta_info[f],
