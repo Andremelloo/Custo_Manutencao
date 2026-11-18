@@ -10,7 +10,9 @@
   <!-- Typography: Outfit & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
 
   <!-- Local Standalone Libraries (100% Offline) -->
   <script src="chart.umd.min.js"></script>
@@ -30,14 +32,17 @@
     <div class="login-card glass-panel">
       <div class="login-badge">TCP</div>
       <h2>Acesso Restrito</h2>
-      <p class="login-sub">Gestão Estratégica de Custos de Manutenção &bull; 2025 vs 2026<br><span style="font-size: 11px; color: var(--brand-cyan);">Terminal de Contêineres de Paranaguá</span></p>
-      
+      <p class="login-sub">Gestão Estratégica de Custos de Manutenção &bull; 2025 vs 2026<br><span
+          style="font-size: 11px; color: var(--brand-cyan);">Terminal de Contêineres de Paranaguá</span></p>
+
       <form id="login-form" onsubmit="handleLogin(event)">
         <div class="login-field">
           <label for="login-password">Senha de Segurança</label>
           <div class="password-input-wrapper">
-            <input type="password" id="login-password" placeholder="Digite a senha de acesso" autocomplete="current-password" required autofocus />
-            <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility()" title="Mostrar/ocultar senha">👁️</button>
+            <input type="password" id="login-password" placeholder="Digite a senha de acesso"
+              autocomplete="current-password" required autofocus />
+            <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility()"
+              title="Mostrar/ocultar senha">👁️</button>
           </div>
         </div>
 
@@ -62,8 +67,11 @@
       <div class="brand-wrapper">
         <div class="brand-badge">TCP</div>
         <div class="brand-info">
-          <h1>Gestão Estratégica de Custos da Manutenção <span style="font-size: 13px; font-weight: 500; color: var(--brand-cyan); background: rgba(56, 189, 248, 0.12); padding: 2px 8px; border-radius: 4px;">W44 :: 2025 vs 2026</span></h1>
-          <p id="header-subtitle">Terminal de Contêineres de Paranaguá &bull; Avaliação Semanal Completa W01 a W44 por Frota</p>
+          <h1>Gestão Estratégica de Custos da Manutenção <span
+              style="font-size: 13px; font-weight: 500; color: var(--brand-cyan); background: rgba(56, 189, 248, 0.12); padding: 2px 8px; border-radius: 4px;">W44
+              :: 2025 vs 2026</span></h1>
+          <p id="header-subtitle">Terminal de Contêineres de Paranaguá &bull; Avaliação Semanal Completa W01 a W44 por
+            Frota</p>
         </div>
       </div>
       <div class="header-controls">
@@ -80,12 +88,18 @@
   <!-- Navigation Tabs -->
   <div class="nav-tabs-wrapper">
     <nav class="nav-tabs">
-      <button class="tab-btn active" id="tab-nav-visao-geral" onclick="switchTab('visao-geral')">📊 Visão Geral Executiva</button>
-      <button class="tab-btn" id="tab-nav-frotas-analise" onclick="switchTab('frotas-analise')">🚜 Análise Semanal por Frota (W01 a W44)</button>
-      <button class="tab-btn" id="tab-nav-diagnostico-wk22" onclick="switchTab('diagnostico-wk22')">🚨 Inflexão Geral (WK 24)</button>
-      <button class="tab-btn" id="tab-nav-comparativo-anos" onclick="switchTab('comparativo-anos')">⚖️ Comparativo 2025 vs 2026</button>
-      <button class="tab-btn" id="tab-nav-deep-dive-frotas" onclick="switchTab('deep-dive-frotas')">📋 Todas as Frotas (Resumo)</button>
-      <button class="tab-btn" id="tab-nav-tabela-analitica" onclick="switchTab('tabela-analitica')">🔍 Base Transacional & Exportação</button>
+      <button class="tab-btn active" id="tab-nav-visao-geral" onclick="switchTab('visao-geral')">📊 Visão Geral
+        Executiva</button>
+      <button class="tab-btn" id="tab-nav-frotas-analise" onclick="switchTab('frotas-analise')">🚜 Análise Semanal por
+        Frota (W01 a W44)</button>
+      <button class="tab-btn" id="tab-nav-diagnostico-wk22" onclick="switchTab('diagnostico-wk22')">🚨 Inflexão Geral
+        (WK 24)</button>
+      <button class="tab-btn" id="tab-nav-comparativo-anos" onclick="switchTab('comparativo-anos')">⚖️ Comparativo 2025
+        vs 2026</button>
+      <button class="tab-btn" id="tab-nav-deep-dive-frotas" onclick="switchTab('deep-dive-frotas')">📋 Todas as Frotas
+        (Resumo)</button>
+      <button class="tab-btn" id="tab-nav-tabela-analitica" onclick="switchTab('tabela-analitica')">🔍 Base Transacional
+        & Exportação</button>
     </nav>
   </div>
 
@@ -94,13 +108,17 @@
 
     <!-- ==================== TAB 1: VISÃO GERAL EXECUTIVA ==================== -->
     <section id="tab-visao-geral" class="tab-section active">
-      
+
       <!-- Top Alert Banner -->
       <div class="alert-box alert-danger">
         <div class="alert-icon">⚠️</div>
         <div class="alert-content">
           <h4>Alerta Orçamentário da Manutenção na Semana 45 (YTW)</h4>
-          <p>O custo acumulado total atingiu <strong>R$ 40.533.493,23</strong> frente a um orçamento planejado de <strong>R$ 30.776.307,69</strong>, gerando um desvio negativo de <strong>-R$ 9.757.185,54 (-31,70%)</strong>. A aceleração crítica teve início exato a partir da <strong>Semana 24</strong>, impulsionada pelas frotas de <strong>TT (-R$ 3,80M)</strong>, <strong>RTG (-R$ 2,36M)</strong> e <strong>Asset Disposal (-R$ 1,17M)</strong>.</p>
+          <p>O custo acumulado total atingiu <strong>R$ 40.533.493,23</strong> frente a um orçamento planejado de
+            <strong>R$ 30.776.307,69</strong>, gerando um desvio negativo de <strong>-R$ 9.757.185,54
+              (-31,70%)</strong>. A aceleração crítica teve início exato a partir da <strong>Semana 24</strong>,
+            impulsionada pelas frotas de <strong>TT (-R$ 3,80M)</strong>, <strong>RTG (-R$ 2,36M)</strong> e
+            <strong>Asset Disposal (-R$ 1,17M)</strong>.</p>
         </div>
       </div>
 
@@ -160,7 +178,8 @@
           <div class="chart-header">
             <div class="chart-title">
               <h3>Curva S de Custos Acumulados (WK 0 a WK 44)</h3>
-              <p>Comparação direta entre o Orçamento Planejado (Forecast) e o Custo Real executado, com destaque na Inflexão da WK 24.</p>
+              <p>Comparação direta entre o Orçamento Planejado (Forecast) e o Custo Real executado, com destaque na
+                Inflexão da WK 24.</p>
             </div>
           </div>
           <div class="chart-wrapper">
@@ -186,7 +205,8 @@
         <div class="chart-header">
           <div class="chart-title">
             <h3>Tabela Consolidada de Contas & Frotas (Posição Oficial WK 44)</h3>
-            <p>Auditoria completa do Budget 2026 vs Custo Acumulado 2026, com saldo nominal, percentual e notas explicativas dos vilões.</p>
+            <p>Auditoria completa do Budget 2026 vs Custo Acumulado 2026, com saldo nominal, percentual e notas
+              explicativas dos vilões.</p>
           </div>
         </div>
         <div class="table-responsive">
@@ -213,17 +233,24 @@
 
     <!-- ==================== TAB 2: ANÁLISE SEMANAL POR FROTA (W01 a W44) ==================== -->
     <section id="tab-frotas-analise" class="tab-section">
-      
+
       <!-- Fleet Selector Bar -->
       <div class="fleet-selector-bar">
         <span class="fleet-selector-label">Selecione a Frota:</span>
-        <button class="fleet-pill-btn active" id="pill-fleet-RESUMO" onclick="selectFleetView('RESUMO')">📋 🔍 Resumo Geral das Frotas (W01 a W44)</button>
-        <button class="fleet-pill-btn" id="pill-fleet-TT" onclick="selectFleetView('TT')">🚛 TT (Terminal Tractor)</button>
-        <button class="fleet-pill-btn" id="pill-fleet-RTG" onclick="selectFleetView('RTG')">🏗️ RTG (TRANSTAINERS)</button>
-        <button class="fleet-pill-btn" id="pill-fleet-STS" onclick="selectFleetView('STS')">⚓ STS (Ship-to-Shore)</button>
-        <button class="fleet-pill-btn" id="pill-fleet-RS" onclick="selectFleetView('RS')">🚜 RS (REACH STACKERS)</button>
-        <button class="fleet-pill-btn" id="pill-fleet-EH" onclick="selectFleetView('EH')">📦 EH (EMPILHADEIRAS VAZIO)</button>
-        <button class="fleet-pill-btn" id="pill-fleet-MHC" onclick="selectFleetView('MHC')">🏗️ MHC (Guindastes Móveis)</button>
+        <button class="fleet-pill-btn active" id="pill-fleet-RESUMO" onclick="selectFleetView('RESUMO')">📋 🔍 Resumo
+          Geral das Frotas (W01 a W44)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-TT" onclick="selectFleetView('TT')">🚛 TT (Terminal
+          Tractor)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-RTG" onclick="selectFleetView('RTG')">🏗️ RTG
+          (TRANSTAINERS)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-STS" onclick="selectFleetView('STS')">⚓ STS
+          (Ship-to-Shore)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-RS" onclick="selectFleetView('RS')">🚜 RS (REACH
+          STACKERS)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-EH" onclick="selectFleetView('EH')">📦 EH (EMPILHADEIRAS
+          VAZIO)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-MHC" onclick="selectFleetView('MHC')">🏗️ MHC (Guindastes
+          Móveis)</button>
       </div>
 
       <!-- ==================== VIEW 1: RESUMO GERAL DAS FROTAS (W01 A W44) ==================== -->
@@ -233,7 +260,9 @@
           <div class="alert-icon">🔍</div>
           <div class="alert-content">
             <h4>🔍 Resumo dos Resultados Semanais por Frota (W01 a W45)</h4>
-            <p>Quadro executivo comparativo do desempenho orçamentário e queima de caixa de todas as frotas da TCP (TT, RTG, STS, RS, EH e MHC). Acompanhe a aceleração da queima semanal (R$/sem) após o ponto de inflexão da Semana 24 e o diagnóstico das peças e serviços ofensores.</p>
+            <p>Quadro executivo comparativo do desempenho orçamentário e queima de caixa de todas as frotas da TCP (TT,
+              RTG, STS, RS, EH e MHC). Acompanhe a aceleração da queima semanal (R$/sem) após o ponto de inflexão da
+              Semana 24 e o diagnóstico das peças e serviços ofensores.</p>
           </div>
         </div>
 
@@ -247,7 +276,8 @@
           <div class="chart-header">
             <div class="chart-title">
               <h3>🔍 Resumo dos Resultados Semanais por Frota (W01 a W45)</h3>
-              <p>Visão consolidada semana a semana de todas as 6 frotas operacionais. Clique no botão de detalhes ou na linha para abrir a análise técnica da frota.</p>
+              <p>Visão consolidada semana a semana de todas as 6 frotas operacionais. Clique no botão de detalhes ou na
+                linha para abrir a análise técnica da frota.</p>
             </div>
           </div>
           <div class="table-responsive">
@@ -281,10 +311,12 @@
             <div class="chart-header">
               <div class="chart-title">
                 <h3>Comparativo da Evolução Semanal de Todas as Frotas (W01 a W45)</h3>
-                <p>Curvas de custo semanal para as 6 frotas operacionais da TCP. O traço vertical tracejado marca o início da aceleração na Semana 24.</p>
+                <p>Curvas de custo semanal para as 6 frotas operacionais da TCP. O traço vertical tracejado marca o
+                  início da aceleração na Semana 24.</p>
               </div>
               <div>
-                <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.2); color: var(--accent-red);">📌 WK 24: Ponto de Inflexão Global</span>
+                <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.2); color: var(--accent-red);">📌 WK 24:
+                  Ponto de Inflexão Global</span>
               </div>
             </div>
             <div class="chart-wrapper" style="min-height: 380px;">
@@ -297,7 +329,9 @@
             <div class="chart-header">
               <div class="chart-title">
                 <h3>Ritmo Médio Semanal por Frota: Pré-WK24 vs Pós-WK24 (R$/semana)</h3>
-                <p><span style="color: #0284c7; font-weight: 700;">■ Barras Azuis = Pré-Inflexão (W01-W23)</span> | <span style="color: #ef4444; font-weight: 700;">■ Barras Vermelhas = Pós-Inflexão (W24-W44)</span>. Queima média semanal comparativa.</p>
+                <p><span style="color: #0284c7; font-weight: 700;">■ Barras Azuis = Pré-Inflexão (W01-W23)</span> |
+                  <span style="color: #ef4444; font-weight: 700;">■ Barras Vermelhas = Pós-Inflexão (W24-W44)</span>.
+                  Queima média semanal comparativa.</p>
               </div>
             </div>
             <div class="chart-wrapper" style="min-height: 350px;">
@@ -311,7 +345,8 @@
           <div class="chart-header" style="margin-bottom: 16px;">
             <div class="chart-title">
               <h3 style="font-size: 18px; font-weight: 700;">⚡ Navegação Rápida para Raio-X Detalhado por Frota</h3>
-              <p>Acesse com 1 clique a análise técnica individual, decomposição por componente e ranking de máquinas de cada frota.</p>
+              <p>Acesse com 1 clique a análise técnica individual, decomposição por componente e ranking de máquinas de
+                cada frota.</p>
             </div>
           </div>
           <div class="cards-grid" id="fleet-quick-cards-grid">
@@ -344,13 +379,18 @@
               <div class="chart-title">
                 <h3 id="fleet-chart1-title">Evolução Semanal de Gastos (W01 a W44)</h3>
                 <p id="fleet-chart1-sub">
-                  <span style="color: #0284c7; font-weight: 700;">■ Barras Azuis = Pré-Inflexão (W01-W23)</span> | 
-                  <span style="color: #ef4444; font-weight: 700;">■ Barras Vermelhas = Pós-Inflexão (W24-W44)</span>. Linhas tracejadas indicam a média semanal de cada período.
+                  <span style="color: #0284c7; font-weight: 700;">■ Barras Azuis = Pré-Inflexão (W01-W23)</span> |
+                  <span style="color: #ef4444; font-weight: 700;">■ Barras Vermelhas = Pós-Inflexão (W24-W44)</span>.
+                  Linhas tracejadas indicam a média semanal de cada período.
                 </p>
               </div>
               <div style="display: flex; gap: 8px;">
-                <span class="kpi-badge" style="background: rgba(2, 132, 199, 0.18); color: #0284c7; font-weight: 700; border: 1px solid rgba(2, 132, 199, 0.4);">■ W01-W23 (Pré-WK24)</span>
-                <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.18); color: #ef4444; font-weight: 700; border: 1px solid rgba(239, 68, 68, 0.4);">■ W24-W44 (Pós-WK24)</span>
+                <span class="kpi-badge"
+                  style="background: rgba(2, 132, 199, 0.18); color: #0284c7; font-weight: 700; border: 1px solid rgba(2, 132, 199, 0.4);">■
+                  W01-W23 (Pré-WK24)</span>
+                <span class="kpi-badge"
+                  style="background: rgba(239, 68, 68, 0.18); color: #ef4444; font-weight: 700; border: 1px solid rgba(239, 68, 68, 0.4);">■
+                  W24-W44 (Pós-WK24)</span>
               </div>
             </div>
             <div class="chart-wrapper" style="min-height: 360px;">
@@ -362,14 +402,18 @@
           <div class="glass-panel chart-card col-12" id="card-chart-frota-meses">
             <div class="chart-header">
               <div class="chart-title">
-                <h3 id="fleet-monthly-chart-title">📅 Evolução Mensal de Gastos vs Meta Orçamentária 2026 (Jan a Nov)</h3>
+                <h3 id="fleet-monthly-chart-title">📅 Evolução Mensal de Gastos vs Meta Orçamentária 2026 (Jan a Nov)
+                </h3>
                 <p id="fleet-monthly-chart-sub">
-                  Comparativo mês a mês do realizado frente à <strong style="color: #10b981;">Meta Mensal Planejada (Linha Verde Tracejada)</strong>.
+                  Comparativo mês a mês do realizado frente à <strong style="color: #10b981;">Meta Mensal Planejada
+                    (Linha Verde Tracejada)</strong>.
                 </p>
               </div>
               <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                <label for="select-familia-grafico-mes" style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Família / Visão:</label>
-                <select id="select-familia-grafico-mes" class="select-control" style="font-size: 12px; padding: 4px 10px;" onchange="changeMonthlyFamilyChart(this.value)">
+                <label for="select-familia-grafico-mes"
+                  style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Família / Visão:</label>
+                <select id="select-familia-grafico-mes" class="select-control"
+                  style="font-size: 12px; padding: 4px 10px;" onchange="changeMonthlyFamilyChart(this.value)">
                   <option value="ACTIVE_FLEET">📌 Frota Ativa no Painel</option>
                   <option value="TT">🚛 TT (Terminal Tractor)</option>
                   <option value="RTG">🏗️ RTG (TRANSTAINERS)</option>
@@ -384,7 +428,8 @@
                   <option value="Others">🏢 Outros Serviços & Predial</option>
                   <option value="TODAS">📊 Consolidado Geral (Todas as Famílias)</option>
                 </select>
-                <span class="kpi-badge" id="badge-meta-mensal" style="background: rgba(16, 185, 129, 0.18); color: #10b981; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px;">
+                <span class="kpi-badge" id="badge-meta-mensal"
+                  style="background: rgba(16, 185, 129, 0.18); color: #10b981; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px;">
                   🎯 Meta Mensal: Carregando...
                 </span>
               </div>
@@ -399,7 +444,8 @@
             <div class="chart-header">
               <div class="chart-title">
                 <h3 id="fleet-chart2-title">Decomposição por Componente Semana por Semana (R$)</h3>
-                <p>Acompanhe a flutuação dos principais componentes mecânicos e sistemas específicos da frota selecionada.</p>
+                <p>Acompanhe a flutuação dos principais componentes mecânicos e sistemas específicos da frota
+                  selecionada.</p>
               </div>
             </div>
             <div class="chart-wrapper" style="min-height: 340px;">
@@ -412,13 +458,18 @@
         <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
           <div class="table-controls">
             <div>
-              <h3 style="font-size: 18px; font-weight: 700;" id="fleet-table-title">Tabela Semana a Semana da Frota (W01 a W45)</h3>
-              <p style="font-size: 12px; color: var(--text-muted);">Visualize todos os valores divididos por componente e o principal evento/máquina de manutenção de cada semana.</p>
+              <h3 style="font-size: 18px; font-weight: 700;" id="fleet-table-title">Tabela Semana a Semana da Frota (W01
+                a W45)</h3>
+              <p style="font-size: 12px; color: var(--text-muted);">Visualize todos os valores divididos por componente
+                e o principal evento/máquina de manutenção de cada semana.</p>
             </div>
             <div style="display: flex; gap: 8px;">
-              <button class="btn-filter-quick active" id="btn-fleet-filter-all" onclick="filterFleetTable('TODAS')">Todas as Semanas (W01-W44)</button>
-              <button class="btn-filter-quick" id="btn-fleet-filter-pre" onclick="filterFleetTable('PRE')">🔵 W01 a W23 (Pré-Inflexão)</button>
-              <button class="btn-filter-quick" id="btn-fleet-filter-pos" onclick="filterFleetTable('POS')">🔴 W24 a W44 (Pós-Inflexão)</button>
+              <button class="btn-filter-quick active" id="btn-fleet-filter-all"
+                onclick="filterFleetTable('TODAS')">Todas as Semanas (W01-W44)</button>
+              <button class="btn-filter-quick" id="btn-fleet-filter-pre" onclick="filterFleetTable('PRE')">🔵 W01 a W23
+                (Pré-Inflexão)</button>
+              <button class="btn-filter-quick" id="btn-fleet-filter-pos" onclick="filterFleetTable('POS')">🔴 W24 a W44
+                (Pós-Inflexão)</button>
             </div>
           </div>
           <div class="table-responsive">
@@ -446,11 +497,18 @@
               <thead>
                 <tr>
                   <th style="min-width: 140px;">Equipamento / Máquina</th>
-                  <th class="text-right" style="min-width: 130px; color: #0284c7;">🔵 Gasto Pré-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W01 a W23)</span></th>
-                  <th style="min-width: 280px; color: #0284c7;">📦 Top 3 Peças/Serviços Pré-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
-                  <th class="text-right" style="min-width: 130px; color: #ef4444;">🔴 Gasto Pós-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W24 a W44)</span></th>
-                  <th style="min-width: 280px; color: #ef4444;">🚨 Top 3 Peças/Serviços Pós-WK24<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
-                  <th class="text-right" style="min-width: 140px;">Total Acumulado<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W44)</span></th>
+                  <th class="text-right" style="min-width: 130px; color: #0284c7;">🔵 Gasto Pré-WK24<br><span
+                      style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W01 a W23)</span></th>
+                  <th style="min-width: 280px; color: #0284c7;">📦 Top 3 Peças/Serviços Pré-WK24<br><span
+                      style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça •
+                      Valor)</span></th>
+                  <th class="text-right" style="min-width: 130px; color: #ef4444;">🔴 Gasto Pós-WK24<br><span
+                      style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W24 a W44)</span></th>
+                  <th style="min-width: 280px; color: #ef4444;">🚨 Top 3 Peças/Serviços Pós-WK24<br><span
+                      style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça •
+                      Valor)</span></th>
+                  <th class="text-right" style="min-width: 140px;">Total Acumulado<br><span
+                      style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W44)</span></th>
                 </tr>
               </thead>
               <tbody id="tbody-frota-maquinas">
@@ -465,12 +523,17 @@
 
     <!-- ==================== TAB 3: DIAGNÓSTICO DA INFLEXÃO WK 24 ==================== -->
     <section id="tab-diagnostico-wk22" class="tab-section">
-      
+
       <div class="alert-box alert-info">
         <div class="alert-icon">🔎</div>
         <div class="alert-content">
           <h4>Por que o gráfico empinou a partir da Semana 24?</h4>
-          <p>Até a Semana 23, o custo semanal médio era de <strong>R$ 1.127.029/semana</strong> (R$ 25,92M acumulados). A partir da <strong>Semana 24</strong>, o gasto médio disparou para <strong>R$ 1.489.794/semana (+32,2% global)</strong>, puxado pela confluência de paradas corretivas e reformas em frotas críticas como <strong>TT (Terminal Tractor)</strong> (+71,8%), <strong>EH (EMPILHADEIRAS VAZIO)</strong> (+32,0%), <strong>STS</strong> (+28,7%), <strong>RS (REACH STACKERS)</strong> (+21,0%) e <strong>RTG (TRANSTAINERS)</strong> (+18,1%):</p>
+          <p>Até a Semana 23, o custo semanal médio era de <strong>R$ 1.127.029/semana</strong> (R$ 25,92M acumulados).
+            A partir da <strong>Semana 24</strong>, o gasto médio disparou para <strong>R$ 1.489.794/semana (+32,2%
+              global)</strong>, puxado pela confluência de paradas corretivas e reformas em frotas críticas como
+            <strong>TT (Terminal Tractor)</strong> (+71,8%), <strong>EH (EMPILHADEIRAS VAZIO)</strong> (+32,0%),
+            <strong>STS</strong> (+28,7%), <strong>RS (REACH STACKERS)</strong> (+21,0%) e <strong>RTG
+              (TRANSTAINERS)</strong> (+18,1%):</p>
         </div>
       </div>
 
@@ -519,7 +582,9 @@
           <div class="chart-header">
             <div class="chart-title">
               <h3>Média Semanal de Gasto: Antes vs Depois da WK 24 (R$/semana)</h3>
-              <p><span style="color: #0284c7; font-weight: 700;">■ Barras Azuis = Pré-Inflexão (W01-W23)</span> | <span style="color: #ef4444; font-weight: 700;">■ Barras Vermelhas = Pós-Inflexão (W24-W44)</span>. Comparativo direto por família.</p>
+              <p><span style="color: #0284c7; font-weight: 700;">■ Barras Azuis = Pré-Inflexão (W01-W23)</span> | <span
+                  style="color: #ef4444; font-weight: 700;">■ Barras Vermelhas = Pós-Inflexão (W24-W44)</span>.
+                Comparativo direto por família.</p>
             </div>
           </div>
           <div class="chart-wrapper">
@@ -572,12 +637,15 @@
 
     <!-- ==================== TAB 4: COMPARATIVO 2025 vs 2026 ==================== -->
     <section id="tab-comparativo-anos" class="tab-section">
-      
+
       <div class="alert-box alert-info">
         <div class="alert-icon">⚖️</div>
         <div class="alert-content">
           <h4>Auditoria de Inflação, Volume e Novos Materiais (2025 vs 2026)</h4>
-          <p>Cruzamos <strong>32.339 lançamentos de 2025</strong> com <strong>27.808 lançamentos de 2026</strong> item a item. Foram identificados <strong>1.836 materiais recorrentes</strong> em ambos os anos, <strong>807 materiais totalmente novos em 2026</strong> (que nunca haviam sido comprados em 2025, somando R$ 5,40M) e <strong>995 materiais consumidos em 2025 que deixaram de ser comprados em 2026</strong>.</p>
+          <p>Cruzamos <strong>32.339 lançamentos de 2025</strong> com <strong>27.808 lançamentos de 2026</strong> item a
+            item. Foram identificados <strong>1.836 materiais recorrentes</strong> em ambos os anos, <strong>807
+              materiais totalmente novos em 2026</strong> (que nunca haviam sido comprados em 2025, somando R$ 5,40M) e
+            <strong>995 materiais consumidos em 2025 que deixaram de ser comprados em 2026</strong>.</p>
         </div>
       </div>
 
@@ -628,7 +696,8 @@
           <div class="chart-header">
             <div class="chart-title">
               <h3>Top 10 Peças com Maior Impacto Financeiro por Aumento de Preço Unitário em 2026</h3>
-              <p>Impacto monetário calculado exclusivamente pelo aumento do custo unitário (Preço Médio 2026 - Preço Médio 2025) &times; Quantidade consumida em 2026.</p>
+              <p>Impacto monetário calculado exclusivamente pelo aumento do custo unitário (Preço Médio 2026 - Preço
+                Médio 2025) &times; Quantidade consumida em 2026.</p>
             </div>
           </div>
           <div class="chart-wrapper">
@@ -639,28 +708,37 @@
 
       <!-- Sub-tabs for Item Tables -->
       <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
           <div>
             <h3 style="font-size: 18px; font-weight: 700;">Detalhamento das Peças & Serviços (2025 vs 2026)</h3>
-            <p style="font-size: 12px; color: var(--text-muted);">Alterne entre a tabela de inflação de preços e a lista de itens novos adquiridos em 2026.</p>
+            <p style="font-size: 12px; color: var(--text-muted);">Alterne entre a tabela de inflação de preços e a lista
+              de itens novos adquiridos em 2026.</p>
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn-filter-quick active" id="btn-subtab-inflacao" onclick="switchItemSubTab('inflacao')">📈 Inflação de Itens (1.911)</button>
-            <button class="btn-filter-quick" id="btn-subtab-novos" onclick="switchItemSubTab('novos')">🆕 890 Novos Itens 2026</button>
-            <button class="btn-filter-quick" id="btn-subtab-descontinuados" onclick="switchItemSubTab('descontinuados')">📦 1.071 Exclusivos 2025</button>
+            <button class="btn-filter-quick active" id="btn-subtab-inflacao" onclick="switchItemSubTab('inflacao')">📈
+              Inflação de Itens (1.911)</button>
+            <button class="btn-filter-quick" id="btn-subtab-novos" onclick="switchItemSubTab('novos')">🆕 890 Novos
+              Itens 2026</button>
+            <button class="btn-filter-quick" id="btn-subtab-descontinuados"
+              onclick="switchItemSubTab('descontinuados')">📦 1.071 Exclusivos 2025</button>
           </div>
         </div>
 
         <!-- Search, Family Filter and Pagination Controls for Comparative Tables -->
-        <div class="table-controls" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div class="table-controls"
+          style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
           <div style="display: flex; gap: 10px; align-items: center; flex: 1; max-width: 680px; flex-wrap: wrap;">
             <div class="search-input-wrapper" style="flex: 1; min-width: 280px;">
               <span class="search-icon">🔍</span>
-              <input type="text" id="filtro-busca-comparativo" class="search-input" placeholder="Pesquisar por Código (ex: LU1540, CT2185) ou Descrição da peça..." oninput="handleComparativoSearch(this.value)">
+              <input type="text" id="filtro-busca-comparativo" class="search-input"
+                placeholder="Pesquisar por Código (ex: LU1540, CT2185) ou Descrição da peça..."
+                oninput="handleComparativoSearch(this.value)">
             </div>
             <div style="display: flex; align-items: center; gap: 6px;">
               <label class="filter-label" for="filtro-familia-comparativo">Família:</label>
-              <select id="filtro-familia-comparativo" class="select-control" onchange="handleComparativoFamilyFilter(this.value)" style="min-width: 170px;">
+              <select id="filtro-familia-comparativo" class="select-control"
+                onchange="handleComparativoFamilyFilter(this.value)" style="min-width: 170px;">
                 <option value="TODAS">Todas as Famílias</option>
                 <!-- Populated dynamically via JS -->
               </select>
@@ -668,7 +746,8 @@
           </div>
 
           <div style="display: flex; align-items: center; gap: 14px;">
-            <div id="comparativo-pagination-info" style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Mostrando 1-50 de 1.911 itens</div>
+            <div id="comparativo-pagination-info" style="font-size: 13px; color: var(--text-muted); font-weight: 600;">
+              Mostrando 1-50 de 1.911 itens</div>
             <div class="pagination-btns">
               <button class="page-btn" id="btn-comp-prev" onclick="prevCompPage()">Anterior</button>
               <button class="page-btn" id="btn-comp-next" onclick="nextCompPage()">Próxima</button>
@@ -746,11 +825,12 @@
 
     <!-- ==================== TAB 5: TODAS AS FROTAS (RESUMO) ==================== -->
     <section id="tab-deep-dive-frotas" class="tab-section">
-      
+
       <div class="chart-header" style="margin-bottom: 20px;">
         <div class="chart-title">
           <h2>Painel Geral de Todas as Frotas & Contas</h2>
-          <p>Visão de cada conta contábil da TCP, detalhando desvios orçamentários, histórico de manutenção e ocorrências pontuais registradas pela engenharia.</p>
+          <p>Visão de cada conta contábil da TCP, detalhando desvios orçamentários, histórico de manutenção e
+            ocorrências pontuais registradas pela engenharia.</p>
         </div>
       </div>
 
@@ -762,13 +842,15 @@
 
     <!-- ==================== TAB 6: TABELA ANALÍTICA & EXPORTAÇÃO ==================== -->
     <section id="tab-tabela-analitica" class="tab-section">
-      
+
       <div class="glass-panel" style="padding: 24px;">
-        
+
         <div class="table-controls">
           <div class="search-input-wrapper">
             <span class="search-icon">🔍</span>
-            <input type="text" id="filtro-busca-tabela" class="search-input" placeholder="Buscar por código (ex: CT2185), descrição, peça, fornecedor, nota..." oninput="handleTableSearch(this.value)">
+            <input type="text" id="filtro-busca-tabela" class="search-input"
+              placeholder="Buscar por código (ex: CT2185), descrição, peça, fornecedor, nota..."
+              oninput="handleTableSearch(this.value)">
           </div>
 
           <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
@@ -850,7 +932,8 @@
   <!-- App Footer -->
   <footer class="app-footer">
     <p>TCP &bull; Terminal de Contêineres de Paranaguá &bull; Diretoria de Operações & Manutenção &bull; 2026</p>
-    <p style="margin-top: 4px; color: var(--text-dim);">Sistema Autônomo e Standalone &bull; Compatível com GitHub Pages &bull; Processamento 100% Offline</p>
+    <p style="margin-top: 4px; color: var(--text-dim);">Sistema Autônomo e Standalone &bull; Compatível com GitHub Pages
+      &bull; Processamento 100% Offline</p>
   </footer>
 
   <!-- App Logic -->
