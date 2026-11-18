@@ -130,11 +130,14 @@ with open(file_2026, 'r', encoding='latin1') as f:
             except:
                 wk = 0
                 
+        month = 0
         try:
             dt = datetime.strptime(d_str, '%d/%m/%Y')
             iso_d = dt.strftime('%Y-%m-%d')
+            month = dt.month
         except:
             iso_d = d_str
+            month = min(12, max(1, int((wk - 1) / 4.33) + 1)) if wk > 0 else 0
             
         grp = row[1].strip() if len(row) > 1 else ''
         acct = row[2].strip() if len(row) > 2 else ''
@@ -153,6 +156,7 @@ with open(file_2026, 'r', encoding='latin1') as f:
         records_2026.append({
             'date': iso_d,
             'week': wk,
+            'month': month,
             'group': grp,
             'account': acct,
             'family': fam,
@@ -619,9 +623,35 @@ for f in fleet_list:
         })
     mach_ranking.sort(key=lambda t: t['total'], reverse=True)
 
+    meses_totais = defaultdict(float)
+    for x in records_2026:
+        if x['family'] != f: continue
+        m = x.get('month', 0)
+        if 1 <= m <= 11:
+            meses_totais[m] += x['value']
+    
+    meta_mensal = round(fleet_meta_info[f]['budget'] * (52 / 44) / 12, 2)
+    meses_list = []
+    month_names = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov']
+    for m in range(1, 12):
+        tot_m = round(meses_totais[m], 2)
+        desvio_m = round(tot_m - meta_mensal, 2)
+        desvio_pct = round(((tot_m / meta_mensal - 1) * 100), 1) if meta_mensal > 0 else 0
+        meses_list.append({
+            'month': m,
+            'label': month_names[m - 1],
+            'total': tot_m,
+            'meta': meta_mensal,
+            'desvio': desvio_m,
+            'desvio_pct': desvio_pct,
+            'acima_meta': (tot_m > meta_mensal)
+        })
+
     frotas_analytics[f] = {
         'info': fleet_meta_info[f],
         'semanas': semanas_list,
+        'meses': meses_list,
+        'meta_mensal': meta_mensal,
         'categorias_comparativo': cat_comp,
         'maquinas_ranking': mach_ranking[:25],
         'pre_total': pre_tot_f,
@@ -632,6 +662,66 @@ for f in fleet_list:
     }
 
 print("Inteligência semanal de frotas calculada com sucesso!")
+
+# 6.1 Inteligência Mensal para Todas as Famílias (Budget Mensal & Realizado)
+todas_familias_meta = {
+    'TT': {'nome': 'TT (Terminal Tractor)', 'budget': 6969769.23, 'icone': '🚛'},
+    'RTG': {'nome': 'RTG (TRANSTAINERS)', 'budget': 12998615.38, 'icone': '🏗️'},
+    'STS': {'nome': 'STS (Ship-to-Shore Cranes)', 'budget': 2772846.15, 'icone': '⚓'},
+    'RS': {'nome': 'RS (REACH STACKERS)', 'budget': 2659461.54, 'icone': '🚜'},
+    'EH': {'nome': 'EH (EMPILHADEIRAS VAZIO)', 'budget': 1012846.15, 'icone': '📦'},
+    'MHC': {'nome': 'MHC (Mobile Harbour Cranes)', 'budget': 368076.92, 'icone': '🏗️'},
+    'WHF': {'nome': 'WHF (Warehouse Forklifts)', 'budget': 265692.31, 'icone': '📦'},
+    'Trucks': {'nome': 'Trucks (Caminhões Apoio)', 'budget': 335923.08, 'icone': '🚚'},
+    'Bus': {'nome': 'Bus (Ônibus & Vans)', 'budget': 84615.38, 'icone': '🚌'},
+    'Asset Disposal': {'nome': 'Asset Disposal (Descarte Ativos)', 'budget': 1914000.0, 'icone': '🗑️'},
+    'Others': {'nome': 'Outros Serviços & Predial', 'budget': 1394461.54, 'icone': '🏢'},
+    'TODAS': {'nome': 'Consolidado de Todas as Famílias', 'budget': 30776307.69, 'icone': '📊'}
+}
+
+mensal_analytics = {
+    'meses_labels': ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov'],
+    'familias': {}
+}
+
+all_fam_monthly = defaultdict(lambda: defaultdict(float))
+total_monthly = defaultdict(float)
+
+for x in records_2026:
+    m = x.get('month', 0)
+    if 1 <= m <= 11:
+        v = x['value']
+        fam = x['family']
+        all_fam_monthly[fam][m] += v
+        total_monthly[m] += v
+
+for k, info in todas_familias_meta.items():
+    meta_m = round(info['budget'] * (52 / 44) / 12, 2)
+    meses_arr = []
+    for m in range(1, 12):
+        if k == 'TODAS':
+            tot_val = round(total_monthly[m], 2)
+        else:
+            tot_val = round(all_fam_monthly[k][m], 2)
+        desvio = round(tot_val - meta_m, 2)
+        desvio_pct = round(((tot_val / meta_m - 1) * 100), 1) if meta_m > 0 else 0
+        meses_arr.append({
+            'month': m,
+            'label': mensal_analytics['meses_labels'][m - 1],
+            'total': tot_val,
+            'meta': meta_m,
+            'desvio': desvio,
+            'desvio_pct': desvio_pct,
+            'acima_meta': (tot_val > meta_m)
+        })
+    mensal_analytics['familias'][k] = {
+        'nome': info['nome'],
+        'icone': info['icone'],
+        'budget_ytd': info['budget'],
+        'meta_mensal': meta_m,
+        'meses': meses_arr
+    }
+print("Inteligência mensal por família calculada com sucesso!")
 
 # 7. Comparativo 2025 vs 2026 Inteligente (Usando Code e QTY Real)
 items_2025 = defaultdict(lambda: {'val': 0.0, 'qty': 0.0, 'count': 0, 'code': '', 'desc': '', 'family': '', 'sup': set()})
@@ -800,6 +890,7 @@ dashboard_bundle = {
     'wk22_comparativo': wk24_comparativo_familias,
     'frotas_analytics': frotas_analytics,
     'rtg_analytics': frotas_analytics['RTG'],
+    'mensal_analytics': mensal_analytics,
     'itens_inflacao_top': itens_inflacao,
     'novos_itens_top': novos_itens_2026,
     'itens_apenas_2025_top': itens_apenas_2025,

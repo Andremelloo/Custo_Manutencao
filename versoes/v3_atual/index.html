@@ -358,6 +358,42 @@
             </div>
           </div>
 
+          <!-- Monthly Evolution vs Monthly Budget Target Chart (Novidade) -->
+          <div class="glass-panel chart-card col-12" id="card-chart-frota-meses">
+            <div class="chart-header">
+              <div class="chart-title">
+                <h3 id="fleet-monthly-chart-title">📅 Evolução Mensal de Gastos vs Meta Orçamentária 2026 (Jan a Nov)</h3>
+                <p id="fleet-monthly-chart-sub">
+                  Comparativo mês a mês do realizado frente à <strong style="color: #10b981;">Meta Mensal Planejada (Linha Verde Tracejada)</strong>.
+                </p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <label for="select-familia-grafico-mes" style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Família / Visão:</label>
+                <select id="select-familia-grafico-mes" class="select-control" style="font-size: 12px; padding: 4px 10px;" onchange="changeMonthlyFamilyChart(this.value)">
+                  <option value="ACTIVE_FLEET">📌 Frota Ativa no Painel</option>
+                  <option value="TT">🚛 TT (Terminal Tractor)</option>
+                  <option value="RTG">🏗️ RTG (TRANSTAINERS)</option>
+                  <option value="STS">⚓ STS (Ship-to-Shore)</option>
+                  <option value="RS">🚜 RS (REACH STACKERS)</option>
+                  <option value="EH">📦 EH (EMPILHADEIRAS VAZIO)</option>
+                  <option value="MHC">🏗️ MHC (Guindastes Móveis)</option>
+                  <option value="WHF">📦 WHF (Empilhadeiras Armazém)</option>
+                  <option value="Trucks">🚚 Trucks (Caminhões de Apoio)</option>
+                  <option value="Bus">🚌 Bus (Ônibus e Vans)</option>
+                  <option value="Asset Disposal">🗑️ Asset Disposal (Descarte de Ativos)</option>
+                  <option value="Others">🏢 Outros Serviços & Predial</option>
+                  <option value="TODAS">📊 Consolidado Geral (Todas as Famílias)</option>
+                </select>
+                <span class="kpi-badge" id="badge-meta-mensal" style="background: rgba(16, 185, 129, 0.18); color: #10b981; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px;">
+                  🎯 Meta Mensal: Carregando...
+                </span>
+              </div>
+            </div>
+            <div class="chart-wrapper" style="min-height: 360px;">
+              <canvas id="chart-frota-meses"></canvas>
+            </div>
+          </div>
+
           <!-- Component Stacked Bar Chart -->
           <div class="glass-panel chart-card col-12">
             <div class="chart-header">

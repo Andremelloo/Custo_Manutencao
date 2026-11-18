@@ -12,6 +12,8 @@ let chartTopDespesasWK22 = null;
 let chartImpactoPreco = null;
 let chartFrotaSemanas = null;
 let chartFrotaComponentes = null;
+let chartFrotaMeses = null;
+let currentMonthlyFamily = 'ACTIVE_FLEET';
 let chartResumoEvolucao = null;
 let chartResumoRitmo = null;
 
@@ -155,6 +157,7 @@ function switchTab(tabId) {
     }
     if (tabId === 'frotas-analise') {
       if (chartFrotaSemanas) chartFrotaSemanas.resize();
+      if (chartFrotaMeses) chartFrotaMeses.resize();
       if (chartFrotaComponentes) chartFrotaComponentes.resize();
       if (chartResumoEvolucao) chartResumoEvolucao.resize();
       if (chartResumoRitmo) chartResumoRitmo.resize();
@@ -557,8 +560,9 @@ function selectFleetView(fleetCode) {
   // 2. Render Dynamic KPI Grid
   renderFleetKPIs(fleetData);
 
-  // 3. Render Fleet Charts
+  // 3. Render Fleet Charts (Semanas & Meses)
   renderFleetCharts(fleetData);
+  renderFleetMonthlyChart(currentMonthlyFamily);
 
   // 4. Render Fleet Weekly Table
   renderFleetWeeklyTable('TODAS');
@@ -1223,6 +1227,165 @@ function renderFleetCharts(fleetData) {
       }
     });
   }
+
+  // 3. Render Monthly vs Budget Chart
+  renderFleetMonthlyChart(currentMonthlyFamily);
+}
+
+// ==================== GRÁFICO MENSAL VS META ORÇAMENTÁRIA (Por Família) ====================
+function changeMonthlyFamilyChart(val) {
+  currentMonthlyFamily = val;
+  renderFleetMonthlyChart(val);
+}
+
+function renderFleetMonthlyChart(familyKey = 'ACTIVE_FLEET') {
+  const data = window.DASHBOARD_DATA;
+  if (!data || !data.mensal_analytics || !data.mensal_analytics.familias) return;
+
+  const isDark = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark';
+  const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+  const textColor = isDark ? '#94a3b8' : '#475569';
+
+  let famCode = familyKey;
+  if (famCode === 'ACTIVE_FLEET') {
+    famCode = currentActiveFleet || 'TT';
+  }
+
+  const famInfo = data.mensal_analytics.familias[famCode] || data.mensal_analytics.familias['TODAS'];
+  if (!famInfo) return;
+
+  // Atualizar título, subtítulo e badge
+  const chartTitleEl = document.getElementById('fleet-monthly-chart-title');
+  const chartSubEl = document.getElementById('fleet-monthly-chart-sub');
+  const badgeMetaEl = document.getElementById('badge-meta-mensal');
+  const selectEl = document.getElementById('select-familia-grafico-mes');
+
+  if (selectEl && selectEl.value !== familyKey) {
+    selectEl.value = familyKey;
+  }
+
+  if (chartTitleEl) {
+    chartTitleEl.textContent = `📅 Evolução Mensal de Gastos vs Meta Orçamentária 2026: ${famInfo.nome}`;
+  }
+  if (chartSubEl) {
+    chartSubEl.innerHTML = `Budget 2026: <strong>${formatBRL(famInfo.budget_ytd)}</strong> &bull; Meta Mensal Planejada: <strong style="color: #10b981;">${formatBRL(famInfo.meta_mensal)}/mês (Linha Verde Tracejada)</strong>`;
+  }
+  if (badgeMetaEl) {
+    badgeMetaEl.textContent = `🎯 Meta Mensal: ${formatBRL(famInfo.meta_mensal)}/mês`;
+  }
+
+  const meses = famInfo.meses;
+  const labels = meses.map(m => m.label + '/26');
+  const totals = meses.map(m => m.total);
+  const metaVal = famInfo.meta_mensal;
+
+  // Cores das Barras: Vermelho se estourou a meta mensal, Azul se ficou dentro do planejado
+  const barColors = meses.map(m => m.total > metaVal ? 'rgba(239, 68, 68, 0.85)' : 'rgba(2, 132, 199, 0.85)');
+  const borderColors = meses.map(m => m.total > metaVal ? '#dc2626' : '#0284c7');
+
+  const ctxMeses = document.getElementById('chart-frota-meses');
+  if (ctxMeses) {
+    if (chartFrotaMeses) chartFrotaMeses.destroy();
+
+    chartFrotaMeses = new Chart(ctxMeses, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            type: 'bar',
+            label: `Gasto Mensal Realizado (${famInfo.nome})`,
+            data: totals,
+            backgroundColor: barColors,
+            borderColor: borderColors,
+            borderWidth: 1.5,
+            borderRadius: 5,
+            order: 2
+          },
+          {
+            type: 'line',
+            label: `Meta Mensal Orçada (${formatBRL(metaVal)}/mês)`,
+            data: Array(meses.length).fill(metaVal),
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            borderWidth: 3,
+            borderDash: [8, 5],
+            pointRadius: 4,
+            pointBackgroundColor: '#10b981',
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 1.5,
+            fill: false,
+            order: 1
+          }
+        ]
+      },
+      plugins: [
+        {
+          id: 'metaMensalMarker',
+          afterDraw: (chart) => {
+            const ctx = chart.ctx;
+            const yAxis = chart.scales.y;
+            const xAxis = chart.scales.x;
+            const yPos = yAxis.getPixelForValue(metaVal);
+            if (yPos >= yAxis.top && yPos <= yAxis.bottom) {
+              ctx.save();
+              ctx.fillStyle = '#10b981';
+              ctx.font = 'bold 11px Outfit, sans-serif';
+              ctx.textAlign = 'right';
+              ctx.fillText(`🎯 Meta: ${formatBRL(metaVal)}/mês`, xAxis.right - 8, yPos - 8);
+              ctx.restore();
+            }
+          }
+        }
+      ],
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: textColor,
+              font: { family: 'Outfit', size: 12, weight: '600' }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                if (context.dataset.type === 'line') {
+                  return `🎯 ${context.dataset.label}`;
+                }
+                const idx = context.dataIndex;
+                const m = meses[idx];
+                const status = m.total > metaVal 
+                  ? `🚨 Acima da Meta (+${m.desvio_pct.toFixed(1)}%)` 
+                  : `✅ Dentro do Orçamento (${m.desvio_pct.toFixed(1)}%)`;
+                return [
+                  `Gasto no Mês: ${formatBRL(m.total)}`,
+                  `Meta Planejada: ${formatBRL(metaVal)}`,
+                  `Desvio Nominal: ${m.desvio >= 0 ? '+' : ''}${formatBRL(m.desvio)}`,
+                  `Status: ${status}`
+                ];
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: textColor, font: { family: 'Inter', size: 11, weight: '600' } }
+          },
+          y: {
+            grid: { color: gridColor },
+            ticks: {
+              color: textColor,
+              callback: v => 'R$ ' + (v / 1000).toFixed(0) + 'k'
+            }
+          }
+        }
+      }
+    });
+  }
 }
 
 function renderFleetWeeklyTable(filterType = 'TODAS') {
@@ -1377,7 +1540,7 @@ function updateChartThemes() {
   const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
   const textColor = isDark ? '#94a3b8' : '#475569';
 
-  [chartCurvaS, chartBalancoFamilias, chartPrePostWK22, chartTopDespesasWK22, chartImpactoPreco, chartFrotaSemanas, chartFrotaComponentes, chartResumoEvolucao, chartResumoRitmo].forEach(c => {
+  [chartCurvaS, chartBalancoFamilias, chartPrePostWK22, chartTopDespesasWK22, chartImpactoPreco, chartFrotaSemanas, chartFrotaMeses, chartFrotaComponentes, chartResumoEvolucao, chartResumoRitmo].forEach(c => {
     if (c) {
       if (c.options.scales?.x) {
         if (c.options.scales.x.grid) c.options.scales.x.grid.color = gridColor;
