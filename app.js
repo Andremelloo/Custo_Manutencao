@@ -26,6 +26,7 @@ let sortDirection = 'asc';
 let compCurrentPage = 1;
 const compPageSize = 50;
 let compSearchTerm = '';
+let compFamilyFilter = 'TODAS';
 let currentCompSubTab = 'inflacao';
 
 // Active Fleet for Fleet Weekly Analysis Tab
@@ -184,6 +185,12 @@ function switchItemSubTab(subTabId) {
 
 function handleComparativoSearch(term) {
   compSearchTerm = (term || '').toLowerCase().trim();
+  compCurrentPage = 1;
+  renderTabelasItens();
+}
+
+function handleComparativoFamilyFilter(val) {
+  compFamilyFilter = val;
   compCurrentPage = 1;
   renderTabelasItens();
 }
@@ -1419,10 +1426,26 @@ function renderTabelasItens() {
   const data = window.DASHBOARD_DATA;
   if (!data) return;
 
+  // Populate Family select once if empty
+  const famSelect = document.getElementById('filtro-familia-comparativo');
+  if (famSelect && famSelect.options.length <= 1 && data.meta && data.meta.familias_comparativo) {
+    data.meta.familias_comparativo.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f;
+      famSelect.appendChild(opt);
+    });
+  }
+
   const term = compSearchTerm;
 
-  // Filter helper
+  // Filter helper with Family and Text Search
   const matchesSearch = it => {
+    if (compFamilyFilter !== 'TODAS') {
+      const itFam = (it.family || '').trim().toLowerCase();
+      const targetFam = compFamilyFilter.trim().toLowerCase();
+      if (itFam !== targetFam && !itFam.includes(targetFam)) return false;
+    }
     if (!term) return true;
     const matchCode = (it.code && it.code !== '-') ? it.code.toLowerCase().includes(term) : false;
     const matchDesc = (it.desc || '').toLowerCase().includes(term);

@@ -612,11 +612,20 @@
           </div>
         </div>
 
-        <!-- Search and Pagination Controls for Comparative Tables -->
+        <!-- Search, Family Filter and Pagination Controls for Comparative Tables -->
         <div class="table-controls" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-          <div class="search-input-wrapper" style="flex: 1; max-width: 500px;">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="filtro-busca-comparativo" class="search-input" placeholder="Pesquisar por Código (ex: LU1540, CT2185) ou Descrição da peça..." oninput="handleComparativoSearch(this.value)">
+          <div style="display: flex; gap: 10px; align-items: center; flex: 1; max-width: 680px; flex-wrap: wrap;">
+            <div class="search-input-wrapper" style="flex: 1; min-width: 280px;">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="filtro-busca-comparativo" class="search-input" placeholder="Pesquisar por Código (ex: LU1540, CT2185) ou Descrição da peça..." oninput="handleComparativoSearch(this.value)">
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <label class="filter-label" for="filtro-familia-comparativo">Família:</label>
+              <select id="filtro-familia-comparativo" class="select-control" onchange="handleComparativoFamilyFilter(this.value)" style="min-width: 170px;">
+                <option value="TODAS">Todas as Famílias</option>
+                <!-- Populated dynamically via JS -->
+              </select>
+            </div>
           </div>
 
           <div style="display: flex; align-items: center; gap: 14px;">

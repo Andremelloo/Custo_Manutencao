@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Gestão de Custos de Manutenção :: TCP (2025 vs 2026)</title>
+
+  <!-- Typography: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Local Standalone Libraries (100% Offline) -->
+  <script src="chart.umd.min.js"></script>
+  <script src="xlsx.full.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Pre-computed Analytics Data -->
+  <script src="dashboard_data.js"></script>
+</head>
+
+<body>
+
+  <!-- Login Security Overlay -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-card glass-panel">
+      <div class="login-badge">TCP</div>
+      <h2>Acesso Restrito</h2>
+      <p class="login-sub">Gestão Estratégica de Custos de Manutenção &bull; 2025 vs 2026<br><span style="font-size: 11px; color: var(--brand-cyan);">Terminal de Contêineres de Paranaguá</span></p>
+      
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="login-field">
+          <label for="login-password">Senha de Segurança</label>
+          <div class="password-input-wrapper">
+            <input type="password" id="login-password" placeholder="Digite a senha de acesso" autocomplete="current-password" required autofocus />
+            <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility()" title="Mostrar/ocultar senha">👁️</button>
+          </div>
+        </div>
+
+        <div id="login-error-msg" class="login-error" style="display: none;">
+          ⚠️ Senha incorreta. Tente novamente.
+        </div>
+
+        <button type="submit" class="login-btn">
+          <span>Desbloquear Dashboard</span> &rarr;
+        </button>
+      </form>
+
+      <div class="login-footer">
+        <span>Confidencial &bull; Uso Interno Manutenção TCP</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <div class="brand-badge">TCP</div>
+        <div class="brand-info">
+          <h1>Gestão Estratégica de Custos da Manutenção <span style="font-size: 13px; font-weight: 500; color: var(--brand-cyan); background: rgba(56, 189, 248, 0.12); padding: 2px 8px; border-radius: 4px;">W44 :: 2025 vs 2026</span></h1>
+          <p id="header-subtitle">Terminal de Contêineres de Paranaguá &bull; Avaliação Semanal Completa W01 a W44 por Frota</p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <button class="theme-toggle-btn" id="btn-theme-toggle" onclick="toggleTheme()">
+          <span id="theme-icon">☀️</span> <span id="theme-text">Modo Claro</span>
+        </button>
+        <button class="logout-btn" id="btn-logout" onclick="handleLogout()" title="Bloquear painel e sair">
+          <span>🔒</span> <span>Bloquear</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs-wrapper">
+    <nav class="nav-tabs">
+      <button class="tab-btn active" id="tab-nav-visao-geral" onclick="switchTab('visao-geral')">📊 Visão Geral Executiva</button>
+      <button class="tab-btn" id="tab-nav-frotas-analise" onclick="switchTab('frotas-analise')">🚜 Análise Semanal por Frota (W01 a W44)</button>
+      <button class="tab-btn" id="tab-nav-diagnostico-wk22" onclick="switchTab('diagnostico-wk22')">🚨 Inflexão Geral (WK 22)</button>
+      <button class="tab-btn" id="tab-nav-comparativo-anos" onclick="switchTab('comparativo-anos')">⚖️ Comparativo 2025 vs 2026</button>
+      <button class="tab-btn" id="tab-nav-deep-dive-frotas" onclick="switchTab('deep-dive-frotas')">📋 Todas as Frotas (Resumo)</button>
+      <button class="tab-btn" id="tab-nav-tabela-analitica" onclick="switchTab('tabela-analitica')">🔍 Base Transacional & Exportação</button>
+    </nav>
+  </div>
+
+  <!-- Main Container -->
+  <main class="main-content">
+
+    <!-- ==================== TAB 1: VISÃO GERAL EXECUTIVA ==================== -->
+    <section id="tab-visao-geral" class="tab-section active">
+      
+      <!-- Top Alert Banner -->
+      <div class="alert-box alert-danger">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-content">
+          <h4>Alerta Orçamentário da Manutenção na Semana 44 (YTW)</h4>
+          <p>O custo acumulado total atingiu <strong>R$ 40.533.493,23</strong> frente a um orçamento planejado de <strong>R$ 30.776.307,69</strong>, gerando um desvio negativo de <strong>-R$ 9.757.185,54 (-31,70%)</strong>. A aceleração crítica teve início exato a partir da <strong>Semana 22</strong>, impulsionada pelas frotas de <strong>TT (-R$ 3,80M)</strong>, <strong>RTG (-R$ 2,36M)</strong> e <strong>Asset Disposal (-R$ 1,17M)</strong>.</p>
+        </div>
+      </div>
+
+      <!-- Executive KPI Cards -->
+      <div class="kpi-grid">
+        <div class="glass-panel kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Orçamento YTD (W44)</span>
+            <span class="kpi-icon">🎯</span>
+          </div>
+          <div class="kpi-value" id="kpi-budget">R$ 30,78 M</div>
+          <div class="kpi-sub">Meta linear até Semana 44</div>
+        </div>
+
+        <div class="glass-panel kpi-card negative">
+          <div class="kpi-header">
+            <span class="kpi-title">Realizado YTD (W44)</span>
+            <span class="kpi-icon">💸</span>
+          </div>
+          <div class="kpi-value" style="color: var(--accent-red);" id="kpi-real">R$ 40,53 M</div>
+          <div class="kpi-sub">
+            <span class="kpi-badge danger">+31,70% acima da meta</span>
+          </div>
+        </div>
+
+        <div class="glass-panel kpi-card negative">
+          <div class="kpi-header">
+            <span class="kpi-title">Balanço (Desvio)</span>
+            <span class="kpi-icon">📉</span>
+          </div>
+          <div class="kpi-value" style="color: var(--accent-red);" id="kpi-balance">-R$ 9,76 M</div>
+          <div class="kpi-sub">Estouro orçamentário consolidado</div>
+        </div>
+
+        <div class="glass-panel kpi-card warning">
+          <div class="kpi-header">
+            <span class="kpi-title">Média Semanal de Gasto</span>
+            <span class="kpi-icon">📅</span>
+          </div>
+          <div class="kpi-value" id="kpi-media-sem">R$ 908.825</div>
+          <div class="kpi-sub">Média executada na W44</div>
+        </div>
+
+        <div class="glass-panel kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Projeção Fechamento 2026</span>
+            <span class="kpi-icon">🔮</span>
+          </div>
+          <div class="kpi-value" id="kpi-forecast">R$ 47,26 M</div>
+          <div class="kpi-sub">Previsão final acumulada</div>
+        </div>
+      </div>
+
+      <!-- Main Charts Row -->
+      <div class="charts-grid">
+        <div class="glass-panel chart-card col-8">
+          <div class="chart-header">
+            <div class="chart-title">
+              <h3>Curva S de Custos Acumulados (WK 0 a WK 44)</h3>
+              <p>Comparação direta entre o Orçamento Planejado (Forecast) e o Custo Real executado, com destaque na Inflexão da WK 22.</p>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-curva-s"></canvas>
+          </div>
+        </div>
+
+        <div class="glass-panel chart-card col-4">
+          <div class="chart-header">
+            <div class="chart-title">
+              <h3>Desvio Orçamentário por Família (R$)</h3>
+              <p>Valores negativos indicam estouro acima da meta orçada na WK 44.</p>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-balanco-familias"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela Oficial de Contas e Balanço W44 -->
+      <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3>Tabela Consolidada de Contas & Frotas (Posição Oficial WK 44)</h3>
+            <p>Auditoria completa do Budget 2026 vs Custo Acumulado 2026, com saldo nominal, percentual e notas explicativas dos vilões.</p>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="tabela-familias-geral">
+            <thead>
+              <tr>
+                <th>Conta / Família</th>
+                <th class="text-right">Budget 2026 (R$)</th>
+                <th class="text-right">Custo Acumulado (R$)</th>
+                <th class="text-right">Balanço (R$)</th>
+                <th class="text-center">Balanço (%)</th>
+                <th class="text-center">Status</th>
+                <th>Principais Ofensores & Notas Técnicas</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-familias-geral">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== TAB 2: ANÁLISE SEMANAL POR FROTA (W01 a W44) ==================== -->
+    <section id="tab-frotas-analise" class="tab-section">
+      
+      <!-- Fleet Selector Bar -->
+      <div class="fleet-selector-bar">
+        <span class="fleet-selector-label">Selecione a Frota:</span>
+        <button class="fleet-pill-btn active" id="pill-fleet-RESUMO" onclick="selectFleetView('RESUMO')">📋 🔍 Resumo Geral das Frotas (W01 a W44)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-TT" onclick="selectFleetView('TT')">🚛 TT (Terminal Tractors)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-RTG" onclick="selectFleetView('RTG')">🏗️ RTG (Transtêineres)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-STS" onclick="selectFleetView('STS')">⚓ STS (Ship-to-Shore)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-RS" onclick="selectFleetView('RS')">🚜 RS (Reach Stackers)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-EH" onclick="selectFleetView('EH')">📦 EH (Empilhadeiras Vazio)</button>
+        <button class="fleet-pill-btn" id="pill-fleet-MHC" onclick="selectFleetView('MHC')">🏗️ MHC (Guindastes Móveis)</button>
+      </div>
+
+      <!-- ==================== VIEW 1: RESUMO GERAL DAS FROTAS (W01 A W44) ==================== -->
+      <div id="fleet-resumo-view">
+        <!-- Resumo Alert Banner -->
+        <div class="alert-box alert-info">
+          <div class="alert-icon">🔍</div>
+          <div class="alert-content">
+            <h4>🔍 Resumo dos Resultados Semanais por Frota (W01 a W44)</h4>
+            <p>Quadro executivo comparativo do desempenho orçamentário e queima de caixa de todas as frotas da TCP (TT, RTG, STS, RS, EH e MHC). Acompanhe a aceleração da queima semanal (R$/sem) após o ponto de inflexão da Semana 22 e o diagnóstico das peças e serviços ofensores.</p>
+          </div>
+        </div>
+
+        <!-- Resumo Dynamic KPI Cards -->
+        <div class="kpi-grid" id="fleet-resumo-kpis">
+          <!-- Rendered via JS -->
+        </div>
+
+        <!-- Resumo Master Table -->
+        <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
+          <div class="chart-header">
+            <div class="chart-title">
+              <h3>🔍 Resumo dos Resultados Semanais por Frota (W01 a W44)</h3>
+              <p>Visão consolidada semana a semana de todas as 6 frotas operacionais. Clique no botão de detalhes ou na linha para abrir a análise técnica da frota.</p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="tabela-resumo-frotas">
+              <thead>
+                <tr>
+                  <th>Frota</th>
+                  <th class="text-center">Ícone</th>
+                  <th class="text-right">Realizado YTD</th>
+                  <th class="text-right">Budget YTD</th>
+                  <th class="text-right">Balanço (R$)</th>
+                  <th class="text-center">Balanço (%)</th>
+                  <th class="text-right">Ritmo Pré-WK22</th>
+                  <th class="text-right">Ritmo Pós-WK22</th>
+                  <th class="text-center">Aceleração</th>
+                  <th>Principais Vilões Identificados</th>
+                  <th class="text-center">Ação</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-resumo-frotas">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Resumo Comparative Charts Row -->
+        <div class="charts-grid">
+          <!-- Chart 1: All fleets weekly evolution comparison -->
+          <div class="glass-panel chart-card col-12">
+            <div class="chart-header">
+              <div class="chart-title">
+                <h3>Comparativo da Evolução Semanal de Todas as Frotas (W01 a W44)</h3>
+                <p>Curvas de custo semanal para as 6 frotas operacionais da TCP. O traço vertical tracejado marca o início da aceleração na Semana 22.</p>
+              </div>
+              <div>
+                <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.2); color: var(--accent-red);">📌 WK 22: Ponto de Inflexão Global</span>
+              </div>
+            </div>
+            <div class="chart-wrapper" style="min-height: 380px;">
+              <canvas id="chart-resumo-evolucao"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Burn rate bar chart Pré vs Pós-WK22 -->
+          <div class="glass-panel chart-card col-12">
+            <div class="chart-header">
+              <div class="chart-title">
+                <h3>Ritmo Médio Semanal por Frota: Pré-WK22 vs Pós-WK22 (R$/semana)</h3>
+                <p>Queima média semanal comparando o período estável (W01-W21) contra o período de aceleração e reformas (W22-W44).</p>
+              </div>
+            </div>
+            <div class="chart-wrapper" style="min-height: 350px;">
+              <canvas id="chart-resumo-ritmo"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fleet Quick Navigation Cards Grid -->
+        <div style="margin-top: 12px; margin-bottom: 28px;">
+          <div class="chart-header" style="margin-bottom: 16px;">
+            <div class="chart-title">
+              <h3 style="font-size: 18px; font-weight: 700;">⚡ Navegação Rápida para Raio-X Detalhado por Frota</h3>
+              <p>Acesse com 1 clique a análise técnica individual, decomposição por componente e ranking de máquinas de cada frota.</p>
+            </div>
+          </div>
+          <div class="cards-grid" id="fleet-quick-cards-grid">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 2: SINGLE FLEET WEEK-BY-WEEK VIEW ==================== -->
+      <div id="fleet-single-view" style="display: none;">
+        <!-- Dynamic Fleet Alert Banner -->
+        <div class="alert-box alert-info" id="fleet-alert-box">
+          <div class="alert-icon" id="fleet-alert-icon">🚛</div>
+          <div class="alert-content">
+            <h4 id="fleet-alert-title">Raio-X Semanal: TT (Terminal Tractors) &bull; W01 a W44</h4>
+            <p id="fleet-alert-desc">Carregando dados da frota...</p>
+          </div>
+        </div>
+
+        <!-- Dynamic Fleet KPI Cards -->
+        <div class="kpi-grid" id="fleet-kpi-grid">
+          <!-- Rendered dynamically via JS for the active fleet -->
+        </div>
+
+        <!-- Fleet Charts Row -->
+        <div class="charts-grid">
+          <!-- Week by Week Bar Chart -->
+          <div class="glass-panel chart-card col-12">
+            <div class="chart-header">
+              <div class="chart-title">
+                <h3 id="fleet-chart1-title">Evolução Semanal de Gastos (W01 a W44)</h3>
+                <p id="fleet-chart1-sub">Barras Azuis = Pré-Inflexão (W01-W21) | Barras Vermelhas = Pós-Inflexão (W22-W44). Linhas tracejadas indicam a média semanal de cada período.</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <span class="kpi-badge" style="background: rgba(56, 189, 248, 0.2); color: var(--brand-cyan);">■ W01-W21 (Pré-WK22)</span>
+                <span class="kpi-badge" style="background: rgba(239, 68, 68, 0.2); color: var(--accent-red);">■ W22-W44 (Pós-WK22)</span>
+              </div>
+            </div>
+            <div class="chart-wrapper" style="min-height: 360px;">
+              <canvas id="chart-frota-semanas"></canvas>
+            </div>
+          </div>
+
+          <!-- Component Stacked Bar Chart -->
+          <div class="glass-panel chart-card col-12">
+            <div class="chart-header">
+              <div class="chart-title">
+                <h3 id="fleet-chart2-title">Decomposição por Componente Semana por Semana (R$)</h3>
+                <p>Acompanhe a flutuação dos principais componentes mecânicos e sistemas específicos da frota selecionada.</p>
+              </div>
+            </div>
+            <div class="chart-wrapper" style="min-height: 340px;">
+              <canvas id="chart-frota-componentes-semana"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fleet Week by Week Table -->
+        <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
+          <div class="table-controls">
+            <div>
+              <h3 style="font-size: 18px; font-weight: 700;" id="fleet-table-title">Tabela Semana a Semana da Frota (W01 a W44)</h3>
+              <p style="font-size: 12px; color: var(--text-muted);">Visualize todos os valores divididos por componente e o principal evento/máquina de manutenção de cada semana.</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-filter-quick active" id="btn-fleet-filter-all" onclick="filterFleetTable('TODAS')">Todas as Semanas (W01-W44)</button>
+              <button class="btn-filter-quick" id="btn-fleet-filter-pre" onclick="filterFleetTable('PRE')">W00 a W21 (Pré-Inflexão)</button>
+              <button class="btn-filter-quick" id="btn-fleet-filter-pos" onclick="filterFleetTable('POS')">W22 a W44 (Pós-Inflexão)</button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="tabela-frota-semanal">
+              <thead id="thead-frota-semanal">
+                <!-- Rendered dynamically based on fleet components -->
+              </thead>
+              <tbody id="tbody-frota-semanal">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Fleet Machine Ranking -->
+        <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
+          <div class="chart-header">
+            <div class="chart-title">
+              <h3 id="fleet-mach-title">Ranking das Máquinas Mais Custosas da Frota (Pré vs Pós-WK 22)</h3>
+              <p>Valores gastos em cada equipamento específico antes e depois da Semana 22.</p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="min-width: 140px;">Equipamento / Máquina</th>
+                  <th class="text-right" style="min-width: 130px;">Gasto Pré-WK22<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W01 a W21)</span></th>
+                  <th style="min-width: 280px;">📦 Top 3 Peças/Serviços Pré-WK22<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
+                  <th class="text-right" style="min-width: 130px;">Gasto Pós-WK22<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W22 a W44)</span></th>
+                  <th style="min-width: 280px;">🚨 Top 3 Peças/Serviços Pós-WK22<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(Qtd • Peça • Valor)</span></th>
+                  <th class="text-right" style="min-width: 140px;">Total Acumulado<br><span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(W44)</span></th>
+                </tr>
+              </thead>
+              <tbody id="tbody-frota-maquinas">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== TAB 3: DIAGNÓSTICO DA INFLEXÃO WK 22 ==================== -->
+    <section id="tab-diagnostico-wk22" class="tab-section">
+      
+      <div class="alert-box alert-info">
+        <div class="alert-icon">🔎</div>
+        <div class="alert-content">
+          <h4>Por que o gráfico empinou exatamente na Semana 22?</h4>
+          <p>Até a Semana 21, o custo acumulado caminhava próximo do orçamento (R$ 15,07M real vs R$ 13,98M meta), com gasto médio de <strong>R$ 645.333/semana</strong>. A partir da <strong>Semana 22</strong>, o gasto médio semanal disparou para <strong>R$ 1.189.812/semana (+84,4% de aumento)</strong>. Esse salto decorreu da confluência de 4 fatores estruturais simultâneos:</p>
+        </div>
+      </div>
+
+      <!-- 4 Pillars of the WK22 Surge -->
+      <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+        <div class="glass-panel kpi-card negative">
+          <div class="kpi-header">
+            <span class="kpi-title">1. Descarte de Ativos (Asset Disposal)</span>
+            <span class="kpi-icon">🗑️</span>
+          </div>
+          <div class="kpi-value" style="color: var(--accent-red);">R$ 3,47 M</div>
+          <div class="kpi-sub">Disparou a partir da W35 sem contrapartida orçada (estouro de -R$ 1,17M).</div>
+        </div>
+
+        <div class="glass-panel kpi-card negative">
+          <div class="kpi-header">
+            <span class="kpi-title">2. Ciclo Crítico de Pneus & Eixos TT</span>
+            <span class="kpi-icon">🚛</span>
+          </div>
+          <div class="kpi-value" style="color: var(--accent-red);">R$ 2,93 M</div>
+          <div class="kpi-sub">967 pneus (R$ 1,69M) e reformas de eixos tandem CH (R$ 1,24M) concentrados.</div>
+        </div>
+
+        <div class="glass-panel kpi-card negative">
+          <div class="kpi-header">
+            <span class="kpi-title">3. Paradas Corretivas RTG</span>
+            <span class="kpi-icon">🏗️</span>
+          </div>
+          <div class="kpi-value" style="color: var(--accent-red);">R$ 2,13 M</div>
+          <div class="kpi-sub">132 freios de gantry (R$ 980k), 13 geradores (R$ 467k) e bombas injetoras.</div>
+        </div>
+
+        <div class="glass-panel kpi-card negative">
+          <div class="kpi-header">
+            <span class="kpi-title">4. Cabos STS & Normativas NR-12</span>
+            <span class="kpi-icon">⚓</span>
+          </div>
+          <div class="kpi-value" style="color: var(--accent-red);">R$ 1,18 M</div>
+          <div class="kpi-sub">Troca de cabos Bridon STS#08/#07/#11 (R$ 725k) e certificações LRQA (R$ 217k).</div>
+        </div>
+      </div>
+
+      <!-- Charts Row for WK22 -->
+      <div class="charts-grid">
+        <div class="glass-panel chart-card col-6">
+          <div class="chart-header">
+            <div class="chart-title">
+              <h3>Média Semanal de Gasto: Antes vs Depois da WK 22 (R$/semana)</h3>
+              <p>Comparativo direto do ritmo de queima orçamentária por família antes (W01-W21) e depois (W22-W44).</p>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-pre-post-wk22"></canvas>
+          </div>
+        </div>
+
+        <div class="glass-panel chart-card col-6">
+          <div class="chart-header">
+            <div class="chart-title">
+              <h3>Evolução das Maiores Despesas da Inflexão</h3>
+              <p>Top lançamentos de maior impacto financeiro contratados a partir da Semana 22.</p>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-top-despesas-wk22"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela Comparativa de Ritmo Semanal por Frota -->
+      <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3>Quadro Comparativo de Aceleração por Família (Pré vs Pós-WK 22)</h3>
+            <p>Variação percentual e nominal do gasto médio semanal que provocou o desvio da meta.</p>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Família de Equipamento</th>
+                <th class="text-right">Total Pré-WK22 (W01-W21)</th>
+                <th class="text-right">Média Semanal Pré (R$)</th>
+                <th class="text-right">Total Pós-WK22 (W22-W44)</th>
+                <th class="text-right">Média Semanal Pós (R$)</th>
+                <th class="text-center">Aceleração (%)</th>
+                <th>Impacto no Desvio</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-wk22-tabela">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== TAB 4: COMPARATIVO 2025 vs 2026 ==================== -->
+    <section id="tab-comparativo-anos" class="tab-section">
+      
+      <div class="alert-box alert-info">
+        <div class="alert-icon">⚖️</div>
+        <div class="alert-content">
+          <h4>Auditoria de Inflação, Volume e Novos Materiais (2025 vs 2026)</h4>
+          <p>Cruzamos <strong>32.339 lançamentos de 2025</strong> com <strong>27.808 lançamentos de 2026</strong> item a item. Foram identificados <strong>1.836 materiais recorrentes</strong> em ambos os anos, <strong>807 materiais totalmente novos em 2026</strong> (que nunca haviam sido comprados em 2025, somando R$ 5,40M) e <strong>995 materiais consumidos em 2025 que deixaram de ser comprados em 2026</strong>.</p>
+        </div>
+      </div>
+
+      <!-- Comparative Metrics -->
+      <div class="kpi-grid">
+        <div class="glass-panel kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Itens Comuns em Ambos os Anos</span>
+            <span class="kpi-icon">🔄</span>
+          </div>
+          <div class="kpi-value" id="kpi-itens-comuns">1.836</div>
+          <div class="kpi-sub">R$ 24,89 M gastos em 2026</div>
+        </div>
+
+        <div class="glass-panel kpi-card warning">
+          <div class="kpi-header">
+            <span class="kpi-title">Novos Itens Criados em 2026</span>
+            <span class="kpi-icon">🆕</span>
+          </div>
+          <div class="kpi-value" id="kpi-novos-itens">807</div>
+          <div class="kpi-sub">
+            <span class="kpi-badge danger">R$ 5,40 M (17,8% do custo total)</span>
+          </div>
+        </div>
+
+        <div class="glass-panel kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Itens Descontinuados em 2026</span>
+            <span class="kpi-icon">📦</span>
+          </div>
+          <div class="kpi-value" id="kpi-itens-descontinuados">995</div>
+          <div class="kpi-sub">Itens de 2025 sem compra em 2026</div>
+        </div>
+
+        <div class="glass-panel kpi-card negative">
+          <div class="kpi-header">
+            <span class="kpi-title">Maior Inflação de Item</span>
+            <span class="kpi-icon">📈</span>
+          </div>
+          <div class="kpi-value" style="color: var(--accent-red);">+73,9%</div>
+          <div class="kpi-sub">Pneu Michelin 310/80 (+R$ 742k impacto)</div>
+        </div>
+      </div>
+
+      <!-- Chart: Price Impact vs Volume Impact -->
+      <div class="charts-grid">
+        <div class="glass-panel chart-card col-12">
+          <div class="chart-header">
+            <div class="chart-title">
+              <h3>Top 10 Peças com Maior Impacto Financeiro por Aumento de Preço Unitário em 2026</h3>
+              <p>Impacto monetário calculado exclusivamente pelo aumento do custo unitário (Preço Médio 2026 - Preço Médio 2025) &times; Quantidade consumida em 2026.</p>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-impacto-preco"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-tabs for Item Tables -->
+      <div class="glass-panel" style="padding: 24px; margin-bottom: 28px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h3 style="font-size: 18px; font-weight: 700;">Detalhamento das Peças & Serviços (2025 vs 2026)</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">Alterne entre a tabela de inflação de preços e a lista de itens novos adquiridos em 2026.</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-filter-quick active" id="btn-subtab-inflacao" onclick="switchItemSubTab('inflacao')">📈 Inflação de Itens Recorrentes</button>
+            <button class="btn-filter-quick" id="btn-subtab-novos" onclick="switchItemSubTab('novos')">🆕 807 Novos Itens em 2026</button>
+            <button class="btn-filter-quick" id="btn-subtab-descontinuados" onclick="switchItemSubTab('descontinuados')">📦 Itens Exclusivos de 2025</button>
+          </div>
+        </div>
+
+        <!-- Table 1: Inflação -->
+        <div id="subtab-view-inflacao" class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Descrição do Material / Peça</th>
+                <th>Família</th>
+                <th class="text-right">Preço Médio 2025</th>
+                <th class="text-right">Preço Médio 2026</th>
+                <th class="text-center">Variação Preço (%)</th>
+                <th class="text-right">Consumo 2025</th>
+                <th class="text-right">Consumo 2026</th>
+                <th class="text-right">Impacto Preço (R$)</th>
+                <th class="text-right">Total Gasto 2026 (R$)</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-inflacao">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Table 2: Novos Itens -->
+        <div id="subtab-view-novos" class="table-responsive" style="display: none;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Descrição do Material Novo em 2026</th>
+                <th>Família</th>
+                <th>Fornecedor Principal</th>
+                <th class="text-right">Preço Médio Unitário</th>
+                <th class="text-center">Qtd Lançamentos</th>
+                <th class="text-right">Total Gasto em 2026 (R$)</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-novos-itens">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Table 3: Descontinuados -->
+        <div id="subtab-view-descontinuados" class="table-responsive" style="display: none;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Descrição do Material Consumido apenas em 2025</th>
+                <th>Família</th>
+                <th>Fornecedor Principal</th>
+                <th class="text-right">Preço Médio 2025</th>
+                <th class="text-center">Qtd Lançamentos 2025</th>
+                <th class="text-right">Total Gasto em 2025 (R$)</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-descontinuados">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== TAB 5: TODAS AS FROTAS (RESUMO) ==================== -->
+    <section id="tab-deep-dive-frotas" class="tab-section">
+      
+      <div class="chart-header" style="margin-bottom: 20px;">
+        <div class="chart-title">
+          <h2>Painel Geral de Todas as Frotas & Contas</h2>
+          <p>Visão de cada conta contábil da TCP, detalhando desvios orçamentários, histórico de manutenção e ocorrências pontuais registradas pela engenharia.</p>
+        </div>
+      </div>
+
+      <div class="family-card-grid" id="container-frotas-cards">
+        <!-- Rendered via JS -->
+      </div>
+
+    </section>
+
+    <!-- ==================== TAB 6: TABELA ANALÍTICA & EXPORTAÇÃO ==================== -->
+    <section id="tab-tabela-analitica" class="tab-section">
+      
+      <div class="glass-panel" style="padding: 24px;">
+        
+        <div class="table-controls">
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="filtro-busca-tabela" class="search-input" placeholder="Buscar por peça, fornecedor, histórico, nota..." oninput="handleTableSearch(this.value)">
+          </div>
+
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <label class="filter-label" for="filtro-familia-select">Frota:</label>
+            <select id="filtro-familia-select" class="select-control" onchange="handleFamilyFilter(this.value)">
+              <option value="TODAS">Todas as Frotas</option>
+              <option value="TT">TT (Terminal Tractors)</option>
+              <option value="RTG">RTG (Transteêineres)</option>
+              <option value="STS">STS (Portêineres)</option>
+              <option value="RS">RS (Reach Stackers)</option>
+              <option value="EH">EH (Empilhadeiras Vazio)</option>
+              <option value="MHC">MHC (Guindastes Portuários)</option>
+              <option value="Asset Disposal">Asset Disposal</option>
+              <option value="Trucks">Trucks (Caminhões)</option>
+              <option value="WHF">WHF (Empilhadeiras Armazém)</option>
+              <option value="Bus">Bus (Ônibus/Transporte)</option>
+              <option value="Others">Outros Serviços & Predial</option>
+            </select>
+
+            <label class="filter-label" for="filtro-periodo-select">Período:</label>
+            <select id="filtro-periodo-select" class="select-control" onchange="handlePeriodFilter(this.value)">
+              <option value="TODAS">Ano Completo (W01 a W44)</option>
+              <option value="PRE_WK22">Pré-Inflexão (W01 a W21)</option>
+              <option value="POS_WK22">Pós-Inflexão (W22 a W44)</option>
+            </select>
+
+            <button class="btn-action" onclick="exportToExcel()">
+              📥 Exportar para Excel (.xlsx)
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="tabela-transacoes-master">
+            <thead>
+              <tr>
+                <th onclick="sortTable('d')">Data ↕</th>
+                <th onclick="sortTable('w')" class="text-center">Semana ↕</th>
+                <th onclick="sortTable('f')">Família ↕</th>
+                <th onclick="sortTable('i')">Máquina / Item ↕</th>
+                <th onclick="sortTable('m')">Descrição do Material / Serviço ↕</th>
+                <th onclick="sortTable('s')">Fornecedor ↕</th>
+                <th onclick="sortTable('v')" class="text-right">Valor (R$) ↕</th>
+                <th>Histórico / Pedido (PC)</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-transacoes-master">
+              <!-- Rendered via JS with fast pagination -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination-wrapper">
+          <div id="pagination-info">Mostrando 1-50 de 25.506 registros</div>
+          <div class="pagination-btns">
+            <button class="page-btn" id="btn-page-prev" onclick="prevPage()">Anterior</button>
+            <button class="page-btn" id="btn-page-next" onclick="nextPage()">Próxima</button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <p>TCP &bull; Terminal de Contêineres de Paranaguá &bull; Diretoria de Operações & Manutenção &bull; 2026</p>
+    <p style="margin-top: 4px; color: var(--text-dim);">Sistema Autônomo e Standalone &bull; Compatível com GitHub Pages &bull; Processamento 100% Offline</p>
+  </footer>
+
+  <!-- App Logic -->
+  <script src="app.js"></script>
+
+</body>
+
+</html>

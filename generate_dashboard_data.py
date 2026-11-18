@@ -1,6 +1,6 @@
 import csv, json, re, os
 from datetime import datetime
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 def parse_val(v):
     if not v: return 0.0
@@ -240,6 +240,37 @@ with open(file_2025, 'r', encoding='latin1') as f:
         })
 
 print(f"Carregados {len(records_2025)} registros para 2025.")
+
+# Mapear Item -> Family a partir da coluna Family da planilha base
+mach_fam_counter = defaultdict(Counter)
+for x in records_2026:
+    if x['item'] and x['fam_detail'] and x['fam_detail'] not in ['#N/D', '#N/A', '0']:
+        mach_fam_counter[x['item']][x['fam_detail']] += 1
+for x in records_2025:
+    if x['item'] and x['fam_detail'] and x['fam_detail'] not in ['#N/D', '#N/A', '0']:
+        mach_fam_counter[x['item']][x['fam_detail']] += 1
+
+mach_to_family = {}
+for m, c in mach_fam_counter.items():
+    mach_to_family[m] = c.most_common(1)[0][0]
+
+def format_machine_code(fam, code):
+    c = str(code or '').strip()
+    if not c: return 'Frota Geral / Estoque'
+    fam_detail = mach_to_family.get(c, '')
+    
+    label = ''
+    if fam == 'RTG' and len(c) == 3 and c.startswith('7'): label = f'RTG#{c[1:]}'
+    elif fam == 'STS' and len(c) == 3 and c.startswith('9'): label = f'STS#{c[1:]}'
+    elif fam == 'RS' and len(c) == 3 and c.startswith('5'): label = f'RS#{c[1:]}'
+    elif fam == 'EH' and len(c) == 3 and c.startswith('4'): label = f'EH#{c[1:]}'
+    elif fam == 'MHC' and c in ['950', '951']: label = f'MHC#{int(c)-949:02d}'
+    elif fam == 'TT' and len(c) == 3 and c.startswith('3'): label = f'TT#{c[1:]}'
+    else: label = f'{fam} {c}'
+    
+    if fam_detail and fam_detail != fam and fam_detail != '0':
+        return f'{label} ({fam_detail})'
+    return label
 
 # 3. Metas Oficiais de Orçamento e Diagnóstico Executivo para WK 44
 familias_oficiais = [
@@ -606,7 +637,9 @@ for x in records_2025:
     items_2025[key]['count'] += 1
     if code: items_2025[key]['code'] = code
     if desc and not items_2025[key]['desc']: items_2025[key]['desc'] = desc
-    if x['family'] and not items_2025[key]['family']: items_2025[key]['family'] = x['family']
+    
+    fam_entry = x['fam_detail'] if (x['fam_detail'] and x['fam_detail'] not in ['#N/D', '#N/A', '0']) else x['family']
+    if fam_entry and not items_2025[key]['family']: items_2025[key]['family'] = fam_entry
     if x['sup']: items_2025[key]['sup'].add(x['sup'])
 
 items_2026 = defaultdict(lambda: {'val': 0.0, 'qty': 0.0, 'count': 0, 'code': '', 'desc': '', 'family': '', 'group2': '', 'sup': set()})
@@ -621,7 +654,9 @@ for x in records_2026:
     items_2026[key]['count'] += 1
     if code: items_2026[key]['code'] = code
     if desc and not items_2026[key]['desc']: items_2026[key]['desc'] = desc
-    if x['family'] and not items_2026[key]['family']: items_2026[key]['family'] = x['family']
+    
+    fam_entry = x['fam_detail'] if (x['fam_detail'] and x['fam_detail'] not in ['#N/D', '#N/A', '0']) else x['family']
+    if fam_entry and not items_2026[key]['family']: items_2026[key]['family'] = fam_entry
     if x['group2'] and not items_2026[key]['group2']: items_2026[key]['group2'] = x['group2']
     if x['sup']: items_2026[key]['sup'].add(x['sup'])
 
@@ -725,6 +760,12 @@ for x in records_2026:
 print(f"Geradas {len(transacoes_compactas)} transações compactas.")
 
 # 9. Montar Pacote Consolidado DASHBOARD_DATA
+all_comp_fams = set()
+for it in itens_inflacao + novos_itens_2026 + itens_apenas_2025:
+    fam_name = it.get('family', '').strip()
+    if fam_name and fam_name not in ['#N/D', '#N/A', '0']:
+        all_comp_fams.add(fam_name)
+
 dashboard_bundle = {
     'meta': {
         'titulo': 'Dashboard de Custos de Manutenção & Frotas - TCP',
@@ -741,6 +782,7 @@ dashboard_bundle = {
         'gasto_novos_itens_2026': sum(x['total_val'] for x in novos_itens_2026),
         'total_itens_apenas_2025': len(only_2025_keys),
         'gasto_apenas_2025': sum(x['total_val'] for x in itens_apenas_2025),
+        'familias_comparativo': sorted(list(all_comp_fams)),
         'data_atualizacao': 'Novembro 2026 (Base Oficial com Code e QTY)'
     },
     'curva_s': curva_s,

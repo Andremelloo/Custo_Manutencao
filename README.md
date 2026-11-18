@@ -67,23 +67,26 @@ Para proteger as informações gerenciais e dados confidenciais de orçamento, o
 
 ---
 
-## 📁 Estrutura dos Arquivos
+## 📁 Estrutura dos Arquivos & Controle de Versão
 
 ```
 Custo_Manutencao/
-├── index.html                   # Estrutura principal do Dashboard com tela de login
-├── styles.css                   # Estilização moderna, responsiva e identidade visual TCP
-├── app.js                       # Lógica de negócio, autenticação, filtros e renderizadores
-├── dashboard_data.js            # Base de dados analítica pré-processada (com Code, QTY e Subgrupos)
-├── chart.umd.min.js             # Biblioteca Chart.js offline
-├── xlsx.full.min.js             # Biblioteca SheetJS offline para exportação Excel
-├── generate_dashboard_data.py   # Script gerador da base analítica a partir da pasta dados/
-├── abrir_dashboard.bat          # Inicializador local em 1 clique
-├── restaurar_versao_anterior.bat # Script de restauração imediata para a versão anterior v1
-├── backup_v1/                   # Cópia integral de segurança dos arquivos da versão anterior
-├── dados/                       # Bases brutas atualizadas (2025 e 2026 com Code e QTY)
-├── .nojekyll                    # Configuração para publicação sem restrições no GitHub Pages
-└── README.md                    # Documentação do projeto
+├── index.html                     # Estrutura principal com tela de login, filtros e busca por lupa
+├── styles.css                     # Estilização moderna, responsiva e identidade visual TCP
+├── app.js                         # Lógica analítica, filtros por Família/Tipo/Período e paginação
+├── dashboard_data.js              # Base analítica pré-processada (com Code, QTY e Famílias)
+├── chart.umd.min.js               # Biblioteca Chart.js offline
+├── xlsx.full.min.js               # Biblioteca SheetJS offline para exportação Excel
+├── generate_dashboard_data.py     # Motor gerador que cruza dados/2025 com dados/2026
+├── abrir_dashboard.bat            # Inicializador local em 1 clique
+├── restaurar_versao.bat           # Menu interativo para restaurar qualquer versão anterior
+├── restaurar_v1_original.bat      # Atalho direto para restaurar a Versão 1 (Original)
+├── restaurar_v2_code_qty.bat      # Atalho direto para restaurar a Versão 2 (Code & QTY)
+├── restaurar_v3_atual.bat         # Atalho direto para restaurar a Versão 3 (Atual)
+├── versoes/                       # Snapshots físicos de cada marco do projeto (v1, v2, v3)
+├── dados/                         # Bases brutas oficiais (2025 e 2026 com Code e QTY)
+├── .nojekyll                      # Configuração para publicação sem restrições no GitHub Pages
+└── README.md                      # Documentação completa do projeto
 ```
 
 ---
