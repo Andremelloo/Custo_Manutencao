@@ -15,3 +15,4 @@ echo Pronto! Os arquivos foram restaurados com sucesso para a versao v1.
 echo Se desejar restaurar no Git, execute: git checkout backup-versao-anterior
 echo.
 pause
+
