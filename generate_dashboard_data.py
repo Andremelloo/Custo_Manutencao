@@ -748,9 +748,9 @@ dashboard_bundle = {
     'wk22_comparativo': wk22_comparativo_familias,
     'frotas_analytics': frotas_analytics,
     'rtg_analytics': frotas_analytics['RTG'],
-    'itens_inflacao_top': itens_inflacao[:120],
-    'novos_itens_top': novos_itens_2026[:120],
-    'itens_apenas_2025_top': itens_apenas_2025[:120],
+    'itens_inflacao_top': itens_inflacao,
+    'novos_itens_top': novos_itens_2026,
+    'itens_apenas_2025_top': itens_apenas_2025,
     'transacoes': transacoes_compactas
 }
 

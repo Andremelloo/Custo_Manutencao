@@ -605,10 +605,26 @@
             <h3 style="font-size: 18px; font-weight: 700;">Detalhamento das Peças & Serviços (2025 vs 2026)</h3>
             <p style="font-size: 12px; color: var(--text-muted);">Alterne entre a tabela de inflação de preços e a lista de itens novos adquiridos em 2026.</p>
           </div>
-          <div style="display: flex; gap: 8px;">
-            <button class="btn-filter-quick active" id="btn-subtab-inflacao" onclick="switchItemSubTab('inflacao')">📈 Inflação de Itens Recorrentes</button>
-            <button class="btn-filter-quick" id="btn-subtab-novos" onclick="switchItemSubTab('novos')">🆕 807 Novos Itens em 2026</button>
-            <button class="btn-filter-quick" id="btn-subtab-descontinuados" onclick="switchItemSubTab('descontinuados')">📦 Itens Exclusivos de 2025</button>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn-filter-quick active" id="btn-subtab-inflacao" onclick="switchItemSubTab('inflacao')">📈 Inflação de Itens (1.911)</button>
+            <button class="btn-filter-quick" id="btn-subtab-novos" onclick="switchItemSubTab('novos')">🆕 890 Novos Itens 2026</button>
+            <button class="btn-filter-quick" id="btn-subtab-descontinuados" onclick="switchItemSubTab('descontinuados')">📦 1.071 Exclusivos 2025</button>
+          </div>
+        </div>
+
+        <!-- Search and Pagination Controls for Comparative Tables -->
+        <div class="table-controls" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div class="search-input-wrapper" style="flex: 1; max-width: 500px;">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="filtro-busca-comparativo" class="search-input" placeholder="Pesquisar por Código (ex: LU1540, CT2185) ou Descrição da peça..." oninput="handleComparativoSearch(this.value)">
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div id="comparativo-pagination-info" style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Mostrando 1-50 de 1.911 itens</div>
+            <div class="pagination-btns">
+              <button class="page-btn" id="btn-comp-prev" onclick="prevCompPage()">Anterior</button>
+              <button class="page-btn" id="btn-comp-next" onclick="nextCompPage()">Próxima</button>
+            </div>
           </div>
         </div>
 

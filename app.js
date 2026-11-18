@@ -22,6 +22,12 @@ let filteredTransactions = [];
 let sortColumn = 'd';
 let sortDirection = 'asc';
 
+// Comparative Tab Pagination & Filter State (2025 vs 2026)
+let compCurrentPage = 1;
+const compPageSize = 50;
+let compSearchTerm = '';
+let currentCompSubTab = 'inflacao';
+
 // Active Fleet for Fleet Weekly Analysis Tab
 let currentActiveFleet = 'RESUMO';
 let currentFleetTableFilter = 'TODAS';
@@ -162,6 +168,9 @@ function switchTab(tabId) {
 
 // ==================== SUB-TABS (COMPARATIVE ITEMS) ====================
 function switchItemSubTab(subTabId) {
+  currentCompSubTab = subTabId;
+  compCurrentPage = 1;
+
   document.getElementById('btn-subtab-inflacao').classList.toggle('active', subTabId === 'inflacao');
   document.getElementById('btn-subtab-novos').classList.toggle('active', subTabId === 'novos');
   document.getElementById('btn-subtab-descontinuados').classList.toggle('active', subTabId === 'descontinuados');
@@ -169,6 +178,26 @@ function switchItemSubTab(subTabId) {
   document.getElementById('subtab-view-inflacao').style.display = subTabId === 'inflacao' ? 'block' : 'none';
   document.getElementById('subtab-view-novos').style.display = subTabId === 'novos' ? 'block' : 'none';
   document.getElementById('subtab-view-descontinuados').style.display = subTabId === 'descontinuados' ? 'block' : 'none';
+
+  renderTabelasItens();
+}
+
+function handleComparativoSearch(term) {
+  compSearchTerm = (term || '').toLowerCase().trim();
+  compCurrentPage = 1;
+  renderTabelasItens();
+}
+
+function prevCompPage() {
+  if (compCurrentPage > 1) {
+    compCurrentPage--;
+    renderTabelasItens();
+  }
+}
+
+function nextCompPage() {
+  compCurrentPage++;
+  renderTabelasItens();
 }
 
 // ==================== INITIALIZE GLOBAL CHARTS ====================
@@ -1390,77 +1419,145 @@ function renderTabelasItens() {
   const data = window.DASHBOARD_DATA;
   if (!data) return;
 
-  // 1. Inflação
-  const tbodyInf = document.getElementById('tbody-inflacao');
-  if (tbodyInf) {
-    tbodyInf.innerHTML = data.itens_inflacao_top.map(it => {
-      const isHigher = it.var_preco_pct > 0;
-      const color = isHigher ? 'var(--accent-red)' : 'var(--accent-green)';
-      const sign = isHigher ? '+' : '';
-      const codeBadge = (it.code && it.code !== '-') 
-        ? `<span style="font-family: monospace; font-size: 11px; padding: 2px 6px; background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan); border-radius: 4px; font-weight: 700;">${it.code}</span>` 
-        : '<span style="color: var(--text-dim); font-size: 11px;">-</span>';
-      return `
-        <tr>
-          <td>${codeBadge}</td>
-          <td class="font-semibold" style="max-width: 300px;">${it.desc}</td>
-          <td style="font-size: 11px; color: var(--text-muted);">${it.group2 || 'Geral'}</td>
-          <td><span class="status-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan);">${it.family}</span></td>
-          <td class="text-right">${formatBRL(it.preco_2025)}</td>
-          <td class="text-right font-bold">${formatBRL(it.preco_2026)}</td>
-          <td class="text-center font-bold" style="color: ${color};">${sign}${it.var_preco_pct.toFixed(1)}%</td>
-          <td class="text-right">${formatNumber(it.qtd_2025)}</td>
-          <td class="text-right font-semibold">${formatNumber(it.qtd_2026)}</td>
-          <td class="text-right font-bold" style="color: ${it.impacto_preco > 0 ? 'var(--accent-red)' : 'var(--accent-green)'}">
-            ${formatBRL(it.impacto_preco)}
-          </td>
-          <td class="text-right font-semibold">${formatBRL(it.total_2026)}</td>
-        </tr>
-      `;
-    }).join('');
-  }
+  const term = compSearchTerm;
 
-  // 2. Novos Itens 2026
-  const tbodyNovos = document.getElementById('tbody-novos-itens');
-  if (tbodyNovos) {
-    tbodyNovos.innerHTML = data.novos_itens_top.map(it => {
-      const codeBadge = (it.code && it.code !== '-') 
-        ? `<span style="font-family: monospace; font-size: 11px; padding: 2px 6px; background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan); border-radius: 4px; font-weight: 700;">${it.code}</span>` 
-        : '<span style="color: var(--text-dim); font-size: 11px;">-</span>';
-      return `
-        <tr>
-          <td>${codeBadge}</td>
-          <td class="font-semibold" style="max-width: 320px;">${it.desc}</td>
-          <td style="font-size: 11px; color: var(--text-muted);">${it.group2 || 'Geral'}</td>
-          <td><span class="status-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan);">${it.family}</span></td>
-          <td style="color: var(--text-muted); font-size: 12px;">${it.sup || 'Estoque Geral / Requisição'}</td>
-          <td class="text-right font-bold">${formatBRL(it.preco_medio)}</td>
-          <td class="text-center font-semibold">${formatNumber(it.qty)}</td>
-          <td class="text-right font-bold" style="color: var(--brand-cyan);">${formatBRL(it.total_val)}</td>
-        </tr>
-      `;
-    }).join('');
-  }
+  // Filter helper
+  const matchesSearch = it => {
+    if (!term) return true;
+    const matchCode = (it.code && it.code !== '-') ? it.code.toLowerCase().includes(term) : false;
+    const matchDesc = (it.desc || '').toLowerCase().includes(term);
+    const matchGroup = (it.group2 || '').toLowerCase().includes(term);
+    const matchFam = (it.family || '').toLowerCase().includes(term);
+    const matchSup = (it.sup || '').toLowerCase().includes(term);
+    return matchCode || matchDesc || matchGroup || matchFam || matchSup;
+  };
+
+  // 1. Inflação
+  const rawInf = data.itens_inflacao_top || [];
+  const filteredInf = rawInf.filter(matchesSearch);
+  
+  // 2. Novos
+  const rawNovos = data.novos_itens_top || [];
+  const filteredNovos = rawNovos.filter(matchesSearch);
 
   // 3. Descontinuados
+  const rawDesc = data.itens_apenas_2025_top || [];
+  const filteredDesc = rawDesc.filter(matchesSearch);
+
+  // Determine current active list and slice for pagination
+  let activeList = filteredInf;
+  if (currentCompSubTab === 'novos') activeList = filteredNovos;
+  else if (currentCompSubTab === 'descontinuados') activeList = filteredDesc;
+
+  const total = activeList.length;
+  const totalPages = Math.ceil(total / compPageSize) || 1;
+  if (compCurrentPage > totalPages) compCurrentPage = totalPages;
+  if (compCurrentPage < 1) compCurrentPage = 1;
+
+  const startIdx = (compCurrentPage - 1) * compPageSize;
+  const endIdx = Math.min(startIdx + compPageSize, total);
+
+  // Update Pagination Info
+  const pInfo = document.getElementById('comparativo-pagination-info');
+  if (pInfo) {
+    if (total === 0) {
+      pInfo.textContent = 'Nenhum item encontrado para esta busca.';
+    } else {
+      pInfo.textContent = `Mostrando ${startIdx + 1}-${endIdx} de ${formatNumber(total)} itens (Página ${compCurrentPage} de ${totalPages})`;
+    }
+  }
+
+  const btnPrev = document.getElementById('btn-comp-prev');
+  const btnNext = document.getElementById('btn-comp-next');
+  if (btnPrev) btnPrev.disabled = compCurrentPage <= 1;
+  if (btnNext) btnNext.disabled = compCurrentPage >= totalPages;
+
+  // Render SubTab 1: Inflação
+  const tbodyInf = document.getElementById('tbody-inflacao');
+  if (tbodyInf) {
+    const listToRender = (currentCompSubTab === 'inflacao') ? filteredInf.slice(startIdx, endIdx) : filteredInf.slice(0, compPageSize);
+    if (!listToRender.length) {
+      tbodyInf.innerHTML = '<tr><td colspan="11" class="text-center" style="padding: 24px; color: var(--text-muted);">Nenhum item correspondente à busca.</td></tr>';
+    } else {
+      tbodyInf.innerHTML = listToRender.map(it => {
+        const isHigher = it.var_preco_pct > 0;
+        const color = isHigher ? 'var(--accent-red)' : 'var(--accent-green)';
+        const sign = isHigher ? '+' : '';
+        const codeBadge = (it.code && it.code !== '-') 
+          ? `<span style="font-family: monospace; font-size: 11px; padding: 2px 6px; background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan); border-radius: 4px; font-weight: 700;">${it.code}</span>` 
+          : '<span style="color: var(--text-dim); font-size: 11px;">-</span>';
+        return `
+          <tr>
+            <td>${codeBadge}</td>
+            <td class="font-semibold" style="max-width: 300px;">${it.desc}</td>
+            <td style="font-size: 11px; color: var(--text-muted);">${it.group2 || 'Geral'}</td>
+            <td><span class="status-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan);">${it.family}</span></td>
+            <td class="text-right">${formatBRL(it.preco_2025)}</td>
+            <td class="text-right font-bold">${formatBRL(it.preco_2026)}</td>
+            <td class="text-center font-bold" style="color: ${color};">${sign}${it.var_preco_pct.toFixed(1)}%</td>
+            <td class="text-right">${formatNumber(it.qtd_2025)}</td>
+            <td class="text-right font-semibold">${formatNumber(it.qtd_2026)}</td>
+            <td class="text-right font-bold" style="color: ${it.impacto_preco > 0 ? 'var(--accent-red)' : 'var(--accent-green)'}">
+              ${formatBRL(it.impacto_preco)}
+            </td>
+            <td class="text-right font-semibold">${formatBRL(it.total_2026)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+  }
+
+  // Render SubTab 2: Novos Itens
+  const tbodyNovos = document.getElementById('tbody-novos-itens');
+  if (tbodyNovos) {
+    const listToRender = (currentCompSubTab === 'novos') ? filteredNovos.slice(startIdx, endIdx) : filteredNovos.slice(0, compPageSize);
+    if (!listToRender.length) {
+      tbodyNovos.innerHTML = '<tr><td colspan="8" class="text-center" style="padding: 24px; color: var(--text-muted);">Nenhum item correspondente à busca.</td></tr>';
+    } else {
+      tbodyNovos.innerHTML = listToRender.map(it => {
+        const codeBadge = (it.code && it.code !== '-') 
+          ? `<span style="font-family: monospace; font-size: 11px; padding: 2px 6px; background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan); border-radius: 4px; font-weight: 700;">${it.code}</span>` 
+          : '<span style="color: var(--text-dim); font-size: 11px;">-</span>';
+        return `
+          <tr>
+            <td>${codeBadge}</td>
+            <td class="font-semibold" style="max-width: 320px;">${it.desc}</td>
+            <td style="font-size: 11px; color: var(--text-muted);">${it.group2 || 'Geral'}</td>
+            <td><span class="status-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--brand-cyan);">${it.family}</span></td>
+            <td style="color: var(--text-muted); font-size: 12px;">${it.sup || 'Estoque Geral / Requisição'}</td>
+            <td class="text-right font-bold">${formatBRL(it.preco_medio)}</td>
+            <td class="text-center font-semibold">${formatNumber(it.qty)}</td>
+            <td class="text-right font-bold" style="color: var(--brand-cyan);">${formatBRL(it.total_val)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+  }
+
+  // Render SubTab 3: Descontinuados
   const tbodyDesc = document.getElementById('tbody-descontinuados');
   if (tbodyDesc) {
-    tbodyDesc.innerHTML = data.itens_apenas_2025_top.map(it => {
-      const codeBadge = (it.code && it.code !== '-') 
-        ? `<span style="font-family: monospace; font-size: 11px; padding: 2px 6px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; font-weight: 700;">${it.code}</span>` 
-        : '<span style="color: var(--text-dim); font-size: 11px;">-</span>';
-      return `
-        <tr>
-          <td>${codeBadge}</td>
-          <td class="font-semibold" style="max-width: 340px;">${it.desc}</td>
-          <td><span class="status-badge" style="background: rgba(255, 255, 255, 0.08);">${it.family}</span></td>
-          <td style="color: var(--text-muted); font-size: 12px;">${it.sup || 'Estoque Geral / Requisição'}</td>
-          <td class="text-right font-bold">${formatBRL(it.preco_medio)}</td>
-          <td class="text-center font-semibold">${formatNumber(it.qty)}</td>
-          <td class="text-right font-semibold">${formatBRL(it.total_val)}</td>
-        </tr>
-      `;
-    }).join('');
+    const listToRender = (currentCompSubTab === 'descontinuados') ? filteredDesc.slice(startIdx, endIdx) : filteredDesc.slice(0, compPageSize);
+    if (!listToRender.length) {
+      tbodyDesc.innerHTML = '<tr><td colspan="7" class="text-center" style="padding: 24px; color: var(--text-muted);">Nenhum item correspondente à busca.</td></tr>';
+    } else {
+      tbodyDesc.innerHTML = listToRender.map(it => {
+        const codeBadge = (it.code && it.code !== '-') 
+          ? `<span style="font-family: monospace; font-size: 11px; padding: 2px 6px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; font-weight: 700;">${it.code}</span>` 
+          : '<span style="color: var(--text-dim); font-size: 11px;">-</span>';
+        return `
+          <tr>
+            <td>${codeBadge}</td>
+            <td class="font-semibold" style="max-width: 340px;">${it.desc}</td>
+            <td><span class="status-badge" style="background: rgba(255, 255, 255, 0.08);">${it.family}</span></td>
+            <td style="color: var(--text-muted); font-size: 12px;">${it.sup || 'Estoque Geral / Requisição'}</td>
+            <td class="text-right font-bold">${formatBRL(it.preco_medio)}</td>
+            <td class="text-center font-semibold">${formatNumber(it.qty)}</td>
+            <td class="text-right font-semibold">${formatBRL(it.total_val)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
   }
 }
 
